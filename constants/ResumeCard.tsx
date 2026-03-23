@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
-import type { Resume } from "../../types";
+import { Link } from "react-router";
+
 import ScoreCircle from "~/components/ScrollCircle";
 
 const ResumeCard = ({ resume: {id,companyName, jobTitle,feedback,imagePath } }: { resume: Resume }) => {
@@ -13,7 +13,7 @@ const ResumeCard = ({ resume: {id,companyName, jobTitle,feedback,imagePath } }: 
                     <h2>{jobTitle}</h2>
                     <p className="font-bold">{companyName}</p>
                 </div>
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                     <ScoreCircle score={feedback.overallScore}></ScoreCircle>
                 </div>
             </div>
@@ -22,7 +22,7 @@ const ResumeCard = ({ resume: {id,companyName, jobTitle,feedback,imagePath } }: 
                           <img
                           src={imagePath}
                           alt="resume"
-                          className="w-full h-[350px] max-sm:h-[200px] object-cover object-top"/>
+                          className="w-full h-87.5 max-sm:h-50 object-cover object-top"/>
                       </div>
             </div>
 

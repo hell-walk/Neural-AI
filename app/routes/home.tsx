@@ -2,8 +2,7 @@ import type { Route } from "./+types/home";
 import { TypeAnimation } from 'react-type-animation';
 import Navbar from "~/components/navbar";
 import {resumes} from "../../constants";
-import ResumeCard from "constants/ResumeCard";
-// import type {Resume} from 'types/index d';
+import ResumeCard from "../../constants/ResumeCard";
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "neural-ai" },
