@@ -1,8 +1,7 @@
-import { Link } from "react-router";
-
+import { Link } from "react-router"; // or "react-router-dom" depending on your package.json
 import ScoreCircle from "~/components/ScrollCircle";
 
-const ResumeCard = ({ resume: {id,companyName, jobTitle,feedback,imagePath } }: { resume: Resume }) => {
+const ResumeCard = ({ resume: {id,companyName, jobTitle,feedback,imagePath } }: { resume: any }) => {
     return (
         <Link
             to={`/resume/${id}`}
@@ -18,16 +17,17 @@ const ResumeCard = ({ resume: {id,companyName, jobTitle,feedback,imagePath } }: 
                 </div>
             </div>
             <div className="gradient-border animate-in fade-in duration-1000">
-                      <div className="w-full h-full">
-                          <img
-                          src={imagePath}
-                          alt="resume"
-                          className="w-full h-87.5 max-sm:h-50 object-cover object-top"/>
-                      </div>
+                <div className="w-full h-full">
+                    <img
+                        src={imagePath}
+                        alt="resume"
+                        className="w-full h-87.5 max-sm:h-50 object-cover object-top"
+                    />
+                </div>
             </div>
-
         </Link>
     );
 };
 
+// THIS IS THE MOST IMPORTANT LINE
 export default ResumeCard;

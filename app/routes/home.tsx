@@ -3,7 +3,7 @@ import { TypeAnimation } from 'react-type-animation';
 import Navbar from "~/components/navbar";
 import {resumes} from "../../constants";
 import ResumeCard from "../../constants/ResumeCard";
-export function meta({}: Route.MetaArgs) {
+export function meta(_args: Route.MetaArgs) {
   return [
     { title: "neural-ai" },
     { name: "description", content: "Smart ai to make your resume job worthy" },
@@ -11,8 +11,9 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-  return <main className="bg-[url('/public/images/bg-main.svg')] bg-cover">
+  return <main className="bg-[url('/images/bg-main.svg')] bg-cover">
       <Navbar />
+
     <section className="main-section">
           <div className="page-heading">
             <h1>Track Your Application And Get Resume Rating</h1>
