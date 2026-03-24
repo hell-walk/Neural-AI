@@ -99,19 +99,16 @@ interface PuterStore {
 const getPuter = (): typeof window.puter | null =>
     typeof window !== "undefined" && window.puter ? window.puter : null;
 
+// Track initialization globally to avoid duplicate setIntervals across hot reloads
+let isPuterInitializing = false;
+
 export const usePuterStore = create<PuterStore>((set, get) => {
     const setError = (msg: string) => {
         set({
             error: msg,
             isLoading: false,
             auth: {
-                user: null,
-                isAuthenticated: false,
-                signIn: get().auth.signIn,
-                signOut: get().auth.signOut,
-                refreshUser: get().auth.refreshUser,
-                checkAuthStatus: get().auth.checkAuthStatus,
-                getUser: get().auth.getUser,
+                ...get().auth
             },
         });
     };
@@ -123,7 +120,10 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             return false;
         }
 
-        set({ isLoading: true, error: null });
+        // Only set loading if we aren't already loading to prevent UI flicker
+        if (!get().isLoading) {
+            set({ isLoading: true, error: null });
+        }
 
         try {
             const isSignedIn = await puter.auth.isSignedIn();
@@ -131,13 +131,9 @@ export const usePuterStore = create<PuterStore>((set, get) => {
                 const user = await puter.auth.getUser();
                 set({
                     auth: {
+                        ...get().auth,
                         user,
                         isAuthenticated: true,
-                        signIn: get().auth.signIn,
-                        signOut: get().auth.signOut,
-                        refreshUser: get().auth.refreshUser,
-                        checkAuthStatus: get().auth.checkAuthStatus,
-                        getUser: () => user,
                     },
                     isLoading: false,
                 });
@@ -145,21 +141,16 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             } else {
                 set({
                     auth: {
+                        ...get().auth,
                         user: null,
                         isAuthenticated: false,
-                        signIn: get().auth.signIn,
-                        signOut: get().auth.signOut,
-                        refreshUser: get().auth.refreshUser,
-                        checkAuthStatus: get().auth.checkAuthStatus,
-                        getUser: () => null,
                     },
                     isLoading: false,
                 });
                 return false;
             }
         } catch (err) {
-            const msg =
-                err instanceof Error ? err.message : "Failed to check auth status";
+            const msg = err instanceof Error ? err.message : "Failed to check auth status";
             setError(msg);
             return false;
         }
@@ -176,10 +167,41 @@ export const usePuterStore = create<PuterStore>((set, get) => {
 
         try {
             await puter.auth.signIn();
-            await checkAuthStatus();
+            
+            const isSignedIn = await puter.auth.isSignedIn();
+            
+            if (isSignedIn) {
+                const user = await puter.auth.getUser();
+                set({
+                    auth: {
+                        ...get().auth,
+                        user,
+                        isAuthenticated: true,
+                    },
+                    isLoading: false,
+                });
+            } else {
+                set({
+                    auth: {
+                        ...get().auth,
+                        user: null,
+                        isAuthenticated: false,
+                    },
+                    isLoading: false,
+                });
+            }
+
         } catch (err) {
-            const msg = err instanceof Error ? err.message : "Sign in failed";
-            setError(msg);
+            const msg = err instanceof Error ? err.message : "Sign in failed or cancelled";
+            set({
+                auth: {
+                    ...get().auth,
+                    user: null,
+                    isAuthenticated: false,
+                },
+                error: msg,
+                isLoading: false,
+            });
         }
     };
 
@@ -196,13 +218,9 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             await puter.auth.signOut();
             set({
                 auth: {
+                    ...get().auth,
                     user: null,
                     isAuthenticated: false,
-                    signIn: get().auth.signIn,
-                    signOut: get().auth.signOut,
-                    refreshUser: get().auth.refreshUser,
-                    checkAuthStatus: get().auth.checkAuthStatus,
-                    getUser: () => null,
                 },
                 isLoading: false,
             });
@@ -225,13 +243,9 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             const user = await puter.auth.getUser();
             set({
                 auth: {
+                    ...get().auth,
                     user,
                     isAuthenticated: true,
-                    signIn: get().auth.signIn,
-                    signOut: get().auth.signOut,
-                    refreshUser: get().auth.refreshUser,
-                    checkAuthStatus: get().auth.checkAuthStatus,
-                    getUser: () => user,
                 },
                 isLoading: false,
             });
@@ -242,27 +256,34 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     };
 
     const init = (): void => {
+        // Prevent multiple initialization loops
+        if (isPuterInitializing || get().puterReady) return;
+        isPuterInitializing = true;
+
         const puter = getPuter();
         if (puter) {
             set({ puterReady: true });
             checkAuthStatus();
+            isPuterInitializing = false;
             return;
         }
 
+        let attempts = 0;
+        const maxAttempts = 100; // 10 seconds at 100ms interval
+
         const interval = setInterval(() => {
+            attempts++;
             if (getPuter()) {
                 clearInterval(interval);
                 set({ puterReady: true });
                 checkAuthStatus();
+                isPuterInitializing = false;
+            } else if (attempts >= maxAttempts) {
+                clearInterval(interval);
+                setError("Puter.js failed to load within 10 seconds");
+                isPuterInitializing = false;
             }
         }, 100);
-
-        setTimeout(() => {
-            clearInterval(interval);
-            if (!getPuter()) {
-                setError("Puter.js failed to load within 10 seconds");
-            }
-        }, 10000);
     };
 
     const write = async (path: string, data: string | File | Blob) => {
@@ -412,7 +433,7 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     };
 
     return {
-        isLoading: true,
+        isLoading: true, // Start in loading state
         error: null,
         puterReady: false,
         auth: {
