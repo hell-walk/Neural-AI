@@ -7,11 +7,11 @@ export const formatSize = (bytes: number): string => {
 };
 
 export const generateUUID = () => {
-    // Check if crypto.randomUUID is available (modern browsers, Node.js 14+)
-    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    // Check if crypto.randomUUID is available AND is a function
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
         return crypto.randomUUID();
     }
-    // Fallback for older environments or if crypto.randomUUID is not available
+    // Fallback for older environments or if crypto.randomUUID is not available/not a function
     // This generates a UUID v4 compliant string
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         const r = Math.random() * 16 | 0,

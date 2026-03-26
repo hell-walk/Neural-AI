@@ -1,13 +1,17 @@
 import React, { useCallback, useState } from 'react';
-import { useDropzone, FileRejection } from 'react-dropzone';
+import { useDropzone } from 'react-dropzone';
+import type { FileRejection } from 'react-dropzone';
 import { formatSize } from '~/lib/utility';
 import DeleteFileAnimation from '~/components/DeleteFileAnimation';
+import ResumeAnalyzerAnimation from '~/components/ResumeAnalyzerAnimation'; // Import the animation
 
 interface FileUploaderProps {
     onFileSelect: (file: File | null) => void;
+    isAnalyzing: boolean; // New prop to trigger the animation
+    onAnimationComplete: () => void; // New prop to signal completion
 }
 
-const Fileuploader: React.FC<FileUploaderProps> = ({ onFileSelect }) => {
+const Fileuploader: React.FC<FileUploaderProps> = ({ onFileSelect, isAnalyzing, onAnimationComplete }) => {
     const [isDeleting, setIsDeleting] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -51,15 +55,19 @@ const Fileuploader: React.FC<FileUploaderProps> = ({ onFileSelect }) => {
         setIsDeleting(true);
     };
 
-    const handleAnimationComplete = () => {
+    const handleDeleteAnimationComplete = () => {
         setIsDeleting(false);
         setSelectedFile(null);
         onFileSelect(null);
     };
 
+    if (isAnalyzing) {
+        return <ResumeAnalyzerAnimation onAnimationComplete={onAnimationComplete} />;
+    }
+
     return (
         <div className="w-full relative">
-            {isDeleting && <DeleteFileAnimation onAnimationComplete={handleAnimationComplete} />}
+            {isDeleting && <DeleteFileAnimation onAnimationComplete={handleDeleteAnimationComplete} />}
             <div 
                 {...getRootProps()} 
                 className={`w-full border-2 border-dashed rounded-xl p-8 text-center backdrop-blur-sm transition-all duration-300 shadow-sm flex flex-col items-center justify-center relative
