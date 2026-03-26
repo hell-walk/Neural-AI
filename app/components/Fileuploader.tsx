@@ -3,17 +3,14 @@ import { useDropzone } from 'react-dropzone';
 import type { FileRejection } from 'react-dropzone';
 import { formatSize } from '~/lib/utility';
 import DeleteFileAnimation from '~/components/DeleteFileAnimation';
-import ResumeAnalyzerAnimation from '~/components/ResumeAnalyzerAnimation'; // Import the animation
 
 interface FileUploaderProps {
     onFileSelect: (file: File | null) => void;
-    isAnalyzing: boolean; // New prop to trigger the animation
-    onAnimationComplete: () => void; // New prop to signal completion
+    currentFile: File | null;
 }
 
-const Fileuploader: React.FC<FileUploaderProps> = ({ onFileSelect, isAnalyzing, onAnimationComplete }) => {
+const Fileuploader: React.FC<FileUploaderProps> = ({ onFileSelect, currentFile }) => {
     const [isDeleting, setIsDeleting] = useState(false);
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     const onDrop = useCallback((acceptedFiles: File[], fileRejections: FileRejection[]) => {
         if (fileRejections.length > 0) {
@@ -26,14 +23,11 @@ const Fileuploader: React.FC<FileUploaderProps> = ({ onFileSelect, isAnalyzing, 
                 alert('Invalid file type. Please upload a PDF or Word document.');
             }
             onFileSelect(null);
-            setSelectedFile(null);
             return;
         }
 
         if (acceptedFiles && acceptedFiles.length > 0) {
-            const file = acceptedFiles[0];
-            setSelectedFile(file);
-            onFileSelect(file);
+            onFileSelect(acceptedFiles[0]);
         }
     }, [onFileSelect]);
 
@@ -47,7 +41,7 @@ const Fileuploader: React.FC<FileUploaderProps> = ({ onFileSelect, isAnalyzing, 
         maxFiles: 1,
         multiple: false,
         maxSize: 10 * 1024 * 1024, // 10MB
-        disabled: isDeleting || selectedFile !== null
+        disabled: isDeleting || currentFile !== null
     });
 
     const handleDelete = (e: React.MouseEvent) => {
@@ -57,13 +51,8 @@ const Fileuploader: React.FC<FileUploaderProps> = ({ onFileSelect, isAnalyzing, 
 
     const handleDeleteAnimationComplete = () => {
         setIsDeleting(false);
-        setSelectedFile(null);
         onFileSelect(null);
     };
-
-    if (isAnalyzing) {
-        return <ResumeAnalyzerAnimation onAnimationComplete={onAnimationComplete} />;
-    }
 
     return (
         <div className="w-full relative">
@@ -77,13 +66,13 @@ const Fileuploader: React.FC<FileUploaderProps> = ({ onFileSelect, isAnalyzing, 
                             ? 'border-red-500 bg-red-50/90 scale-105 cursor-no-drop' 
                             : isDragActive 
                                 ? 'border-purple-600 bg-purple-50/90 scale-105 cursor-copy' 
-                                : selectedFile 
+                                : currentFile 
                                     ? 'border-green-400 bg-green-50/80 cursor-default' 
                                     : 'border-purple-300 bg-white/60 hover:bg-white/90 hover:border-purple-500 cursor-pointer'}`}
             >
                 <input {...getInputProps()} />
                 
-                {selectedFile && !isDeleting && (
+                {currentFile && !isDeleting && (
                     <button
                         type="button"
                         onClick={handleDelete}
@@ -96,22 +85,22 @@ const Fileuploader: React.FC<FileUploaderProps> = ({ onFileSelect, isAnalyzing, 
 
                 <div className="pointer-events-none flex flex-col items-center">
                     <span className="text-4xl mb-2" role="img" aria-label="Document">
-                        {isDragReject ? '❌' : selectedFile ? '✅' : '📄'}
+                        {isDragReject ? '❌' : currentFile ? '✅' : '📄'}
                     </span>
                     <p className={`font-semibold mb-1 ${isDragReject ? 'text-red-600' : 'text-gray-800'}`}>
                         {isDragReject 
                             ? 'File rejected!' 
-                            : selectedFile 
-                                ? selectedFile.name 
+                            : currentFile 
+                                ? currentFile.name 
                                 : isDragActive 
                                     ? 'Drop it here!' 
                                     : 'Click or drag to upload'}
                     </p>
-                    <p className={`text-sm ${isDragReject ? 'text-red-500 font-semibold' : selectedFile ? 'text-green-600' : 'text-gray-500'}`}>
+                    <p className={`text-sm ${isDragReject ? 'text-red-500 font-semibold' : currentFile ? 'text-green-600' : 'text-gray-500'}`}>
                         {isDragReject 
                             ? 'Max 10MB, PDF/DOC only' 
-                            : selectedFile 
-                                ? `(${formatSize(selectedFile.size)})`
+                            : currentFile 
+                                ? `(${formatSize(currentFile.size)})`
                                 : 'PDF, DOC, DOCX (Max 10MB)'}
                     </p>
                 </div>

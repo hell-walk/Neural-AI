@@ -7,6 +7,7 @@ import { convertPdfToImage } from "~/lib/pdf2img";
 import { generateUUID } from "~/lib/utility";
 import { prepareInstructions, AIResponseFormat } from "../../constants";
 import { extractTextFromPdf } from "~/lib/pdfUtils";
+import ClearTextButton from "~/components/ClearTextButton";
 
 
 const Upload = () => {
@@ -50,6 +51,13 @@ const Upload = () => {
 
     const handleFileSelect = (selectedFile: File | null) => {
         setFile(selectedFile);
+    };
+
+    const handleClearText = () => {
+        setJobTitle("");
+        setCompanyName("");
+        setJobDescription("");
+        setFile(null); // Also clear the selected file
     };
 
     const handleAnalyze = useCallback(async () => {
@@ -163,12 +171,15 @@ const Upload = () => {
         handleAnalyze();
     };
 
+    const hasData = jobTitle.trim() !== "" || companyName.trim() !== "" || jobDescription.trim() !== "" || file !== null;
+
     return (
         <main className="bg-[url('/public/images/bg-main.svg')] bg-cover min-h-screen flex flex-col">
             <Navbar />
 
             <section className="main-section grow flex flex-col justify-center items-center px-4 py-12">
-                 <div className="page-heading text-center w-full max-w-3xl flex flex-col items-center">
+                 <div className="page-heading text-center w-full max-w-3xl flex flex-col items-center relative">
+                     
                      <h1 className="text-4xl md:text-5xl font-bold mb-4">Smart Feedback For Your Dream Job</h1>
                      
                      {isProcessing ? (
@@ -182,8 +193,13 @@ const Upload = () => {
 
                      {!isProcessing && (
                          <form id="upload-form" onSubmit={handleSubmit} className="flex flex-col gap-6 w-full mt-4">
-                                <div className="flex flex-col gap-4 max-w-2xl mx-auto w-full">
+                                <div className="flex flex-col gap-4 max-w-2xl mx-auto w-full relative">
                                     
+                                    <ClearTextButton 
+                                        onClear={handleClearText} 
+                                        isVisible={hasData} 
+                                    />
+
                                     {/* 1. Job Title Div */}
                                     <div className="form-div flex flex-col text-left w-full">
                                         <label htmlFor="job-title" className="text-gray-700 font-semibold mb-2 ml-1 text-sm text-center">
@@ -240,7 +256,11 @@ const Upload = () => {
                                         <label className="text-gray-700 font-semibold mb-2 ml-1 text-sm text-center">
                                             Upload Your Resume
                                         </label>
-                                        <Fileuploader onFileSelect={handleFileSelect} isAnalyzing={isProcessing} onAnimationComplete={() => {}}/>
+                                        {/* Pass the currently selected file down to Fileuploader so it can show it */}
+                                        <Fileuploader 
+                                            onFileSelect={handleFileSelect} 
+                                            currentFile={file} 
+                                        />
                                     </div>
 
                                 </div>

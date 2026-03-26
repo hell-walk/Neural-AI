@@ -1,144 +1,117 @@
-CODE DEEP DIVE: HOW TO USE THE FEATURES
+CODE DEEP DIVE: ARCHITECTURE & PATTERNS
 
-This document explains EXACTLY how the code works piece by piece so you can copy, paste, and modify it for your own features.
-
-=========================================
-1. HOW TO UPLOAD FILES & GET THE PDF TEXT
-=========================================
-
-File: `app/routes/upload.tsx`
-
-If you want to build a feature where a user uploads a PDF and your app reads the text inside it, here is the exact pattern to follow:
-
-Step A: Setup State
-Create a place in your component to store the raw File and the text you pull out of it.
-```javascript
-const [selectedFile, setSelectedFile] = useState<File | null>(null);
-const [extractedText, setExtractedText] = useState<string | null>(null);
-```
-
-Step B: The Effect Hook (The Magic)
-You need a `useEffect` that listens to `selectedFile`. The moment the user drops a file into the box, this code runs automatically.
-
-```javascript
-import { extractTextFromPdf } from "~/lib/pdfUtils"; // Import our custom reader
-
-useEffect(() => {
-    const parsePdf = async () => {
-        if (!selectedFile) return;
-
-        // Make sure they actually uploaded a PDF!
-        if (selectedFile.type === 'application/pdf') {
-            try {
-                console.log("Reading PDF...");
-
-                // This function opens the PDF, reads every page, and returns a massive string of text
-                const text = await extractTextFromPdf(selectedFile);
-
-                setExtractedText(text); // Save it!
-                console.log("Success! We got " + text.length + " characters of text.");
-
-            } catch (error) {
-                alert("Failed to read PDF.");
-            }
-        }
-    };
-
-    parsePdf();
-}, [selectedFile]); // This array tells React: "Run this function every time selectedFile changes"
-```
-
+This document explains EXACTLY how the core features of the Neural-AI Resume Analyzer are built so you can maintain them, expand them, and copy the patterns for future features.
 
 =========================================
-2. HOW TO TRIGGER FRAMER MOTION ANIMATIONS
+1. THE GLOBAL AUTH & BACKEND STORE (ZUSTAND)
 =========================================
-
-File: `app/components/ResumeAnalyzerAnimation.tsx`
-
-Animations in React can be tricky because components normally just snap in and out of existence. Framer Motion makes it smooth.
-
-Step A: The Reusable Component
-We built the animations as completely separate components that take a function prop (`onAnimationComplete`).
-
-Step B: Triggering it
-In your main page (`upload.tsx`), you use a boolean state (`showAnimation`) to decide when to show the animation instead of the normal form.
-
-```javascript
-const [showAnimation, setShowAnimation] = useState(false);
-
-const handleButtonClick = () => {
-    // 1. Hide the form, show the animation
-    setShowAnimation(true);
-};
-
-const handleAnimationFinished = () => {
-    // 2. The animation component calls this when it's done
-    setShowAnimation(false);
-
-    // 3. Move on to the next step! (e.g. show the scanning GIF)
-    setIsProcessing(true);
-};
-
-// In your JSX:
-{showAnimation ? (
-    <ResumeAnalyzerAnimation onAnimationComplete={handleAnimationFinished} />
-) : (
-    <button onClick={handleButtonClick}>Start</button>
-)}
-```
-
-
-=========================================
-3. HOW TO USE PUTER.JS AUTHENTICATION
-=========================================
-
 File: `app/lib/puter.ts`
 
-Puter handles all your backend accounts automatically. We wrapped it in a "Zustand Store" so you can access it from ANY file without passing props down.
+We use Zustand to create a globally accessible "Store". This is much cleaner than passing props down through 10 levels of components or setting up complex React Context providers.
 
+Why it's structured this way:
+* Puter.js is injected via a `<script>` tag in `root.tsx`.
+* It takes a moment to load from the internet.
+* The `init()` function runs a `setInterval` that checks 10 times a second to see if `window.puter` finally exists.
+* Once it exists, it clears the interval and checks if the user is already logged in.
+
+How to use it in any component:
 ```javascript
 import { usePuterStore } from "~/lib/puter";
 
 export default function MyPage() {
-    // Reach into the global store and grab exactly what you need
-    const { auth, isLoading } = usePuterStore();
+    // 1. Grab exactly the functions or states you need
+    const { auth, isLoading, puterReady } = usePuterStore();
 
-    // To check if they are logged in:
-    if (auth.isAuthenticated) {
-        console.log("Hello, " + auth.user?.username);
-    }
+    // 2. Safely check state
+    if (isLoading || !puterReady) return <p>Loading SDK...</p>;
 
-    // To create a login button:
+    // 3. Trigger actions directly
     return (
-        <button onClick={auth.signIn}>Log In</button>
+        <button onClick={auth.signIn}>
+            {auth.isAuthenticated ? "Switch Account" : "Log In"}
+        </button>
     )
 }
 ```
 
-
 =========================================
-4. HOW THE FORM VALIDATION WORKS
+2. THE "SMART FORM" PATTERN
 =========================================
-
 File: `app/routes/upload.tsx`
 
-We want to force the user to either give us ALL the data (Title + Company + Description + File) or give us NOTHING.
+This form is built as a "Controlled Component". This means React state (`useState`) is the single source of truth for every input, rather than the HTML DOM.
 
-We do this by constantly checking the state variables as they type, and calculating a boolean `isFormValid` value before the component even renders the HTML.
+Why this is powerful:
+Because we track every keystroke in state, we can write complex real-time logic that updates the UI instantly.
 
+Example: The "Clear Text" Button Logic
 ```javascript
-// 1. Grab what they typed
 const [jobTitle, setJobTitle] = useState("");
-const [selectedFile, setSelectedFile] = useState<File | null>(null);
+const [companyName, setCompanyName] = useState("");
 
-// 2. Calculate if the form is valid RIGHT NOW
-// The `.trim()` removes accidental spaces so "   " isn't counted as a valid title.
-const isFormValid = selectedFile !== null && jobTitle.trim() !== "";
+// This variable recalculates on every render.
+// It is TRUE if ANY of the fields have text. It is FALSE if they are all empty.
+const hasTextData = jobTitle.trim() !== "" || companyName.trim() !== "";
 
-// 3. Disable the button if it's not valid
-<button disabled={!isFormValid} type="submit">
-    Submit
-</button>
+// In the JSX, we only render the button if hasTextData is true!
+{hasTextData && (
+    <button onClick={handleClearForm}>Clear</button>
+)}
 ```
 
-By doing this, the button will automatically stay greyed out, and instantly turn purple the millisecond they finish filling out the last required field. No extra code needed!
+=========================================
+3. THE DRAG-AND-DROP UPLOADER
+=========================================
+File: `app/components/FileUploader.tsx`
+
+We use the `react-dropzone` library instead of writing manual HTML5 drag events (`onDragEnter`, `onDrop`).
+
+Why?
+1. It handles cross-browser bugs automatically.
+2. It gives us an easy `accept` object to restrict to PDFs/Word docs.
+3. It handles `maxSize` rejection gracefully.
+
+How the data flows back to the parent:
+```javascript
+// Inside FileUploader.tsx:
+const onDrop = useCallback((acceptedFiles) => {
+    const file = acceptedFiles[0]; // Grab the first valid file
+    setSelectedFile(file);         // Update local UI state (to show the checkmark)
+    onFileSelect(file);            // Pass the data UP to the parent component!
+}, [onFileSelect]);
+
+// Inside upload.tsx (the parent):
+<FileUploader onFileSelect={(file) => setFile(file)} />
+```
+
+=========================================
+4. ORCHESTRATING FRAMER MOTION ANIMATIONS
+=========================================
+File: `app/components/ResumeAnalyzerAnimation.tsx`
+
+React components usually instantly snap onto the screen. Framer Motion lets us build complex, timeline-based keyframe animations.
+
+The Keyframe Array Pattern:
+Instead of saying `x: 100`, you can give it an array: `x: [0, 80, 0]`. Framer Motion will smoothly transition the element through those points over the given `duration`.
+
+The Timeline Pattern (`times`):
+```javascript
+animate={{
+    scale:   [1, 1.3, 0.2], // Normal -> Big -> Tiny
+    opacity: [0, 1,   1, 0] // Invisible -> Visible -> Visible -> Invisible
+}}
+transition={{
+    duration: 1.5,
+    // These numbers dictate WHEN the keyframes above happen (0 to 1)
+    // 0 = Start, 0.4 = 40% through the animation, 1 = End
+    times: [0, 0.4, 0.9, 1]
+}}
+```
+
+The Callback Pattern:
+Because the animation is a separate component, the parent (`upload.tsx`) doesn't know when the animation finishes.
+1. The parent passes an `onAnimationComplete` function down.
+2. The animation component runs a `setTimeout` matching the exact length of the animation (e.g., 2.5s).
+3. When the timeout fires, it calls the prop function.
+4. The parent receives the signal, hides the animation, and shows the loading screen!

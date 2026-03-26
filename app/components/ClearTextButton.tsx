@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface ClearTextButtonProps {
     onClear: () => void;
@@ -12,10 +12,10 @@ const ClearTextButton: React.FC<ClearTextButtonProps> = ({ onClear, isVisible })
         <button
             type="button"
             onClick={onClear}
-            className="absolute -top-8 right-2 text-sm text-red-500 hover:text-red-700 font-semibold transition-colors flex items-center gap-1 z-10"
-            title="Clear all text fields"
+            className="absolute top-2 right-2 text-sm text-red-500 hover:text-red-700 transition-colors z-10 flex items-center gap-1 bg-white/80 backdrop-blur-sm px-2 py-1 rounded-md border border-red-100 shadow-sm"
+            title="Clear all fields"
         >
-            <span>✕</span> Clear Text
+            <span>✕</span> Clear
         </button>
     );
 };
