@@ -1,40 +1,113 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { useDropzone, FileRejection } from 'react-dropzone';
+import { formatSize } from '~/lib/utility';
+import DeleteFileAnimation from '~/components/DeleteFileAnimation';
 
 interface FileUploaderProps {
     onFileSelect: (file: File | null) => void;
 }
 
 const Fileuploader: React.FC<FileUploaderProps> = ({ onFileSelect }) => {
-    const [fileName, setFileName] = useState<string | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files ? event.target.files[0] : null;
-        
-        if (file) {
-            setFileName(file.name);
-            onFileSelect(file);
-        } else {
-            setFileName(null);
+    const onDrop = useCallback((acceptedFiles: File[], fileRejections: FileRejection[]) => {
+        if (fileRejections.length > 0) {
+            const error = fileRejections[0].errors[0];
+            if (error.code === 'too-many-files') {
+                alert('Please upload only one file at a time.');
+            } else if (error.code === 'file-too-large') {
+                alert('File is larger than 10MB. Please upload a smaller file.');
+            } else if (error.code === 'file-invalid-type') {
+                alert('Invalid file type. Please upload a PDF or Word document.');
+            }
             onFileSelect(null);
+            setSelectedFile(null);
+            return;
         }
+
+        if (acceptedFiles && acceptedFiles.length > 0) {
+            const file = acceptedFiles[0];
+            setSelectedFile(file);
+            onFileSelect(file);
+        }
+    }, [onFileSelect]);
+
+    const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
+        onDrop,
+        accept: {
+            'application/pdf': ['.pdf'],
+            'application/msword': ['.doc'],
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx']
+        },
+        maxFiles: 1,
+        multiple: false,
+        maxSize: 10 * 1024 * 1024, // 10MB
+        disabled: isDeleting || selectedFile !== null
+    });
+
+    const handleDelete = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setIsDeleting(true);
+    };
+
+    const handleAnimationComplete = () => {
+        setIsDeleting(false);
+        setSelectedFile(null);
+        onFileSelect(null);
     };
 
     return (
-        <div className="w-full">
-            <input
-                type="file"
-                name="resume-upload"
-                id="resume-upload"
-                onChange={handleFileChange}
-                className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100 cursor-pointer"
-                accept=".pdf,.doc,.docx"
-                required
-            />
-            {fileName && (
-                <p className="text-green-600 text-sm mt-2 text-center font-medium">
-                    ✅ Selected: {fileName}
-                </p>
-            )}
+        <div className="w-full relative">
+            {isDeleting && <DeleteFileAnimation onAnimationComplete={handleAnimationComplete} />}
+            <div 
+                {...getRootProps()} 
+                className={`w-full border-2 border-dashed rounded-xl p-8 text-center backdrop-blur-sm transition-all duration-300 shadow-sm flex flex-col items-center justify-center relative
+                    ${isDeleting 
+                        ? 'opacity-0 scale-95'
+                        : isDragReject 
+                            ? 'border-red-500 bg-red-50/90 scale-105 cursor-no-drop' 
+                            : isDragActive 
+                                ? 'border-purple-600 bg-purple-50/90 scale-105 cursor-copy' 
+                                : selectedFile 
+                                    ? 'border-green-400 bg-green-50/80 cursor-default' 
+                                    : 'border-purple-300 bg-white/60 hover:bg-white/90 hover:border-purple-500 cursor-pointer'}`}
+            >
+                <input {...getInputProps()} />
+                
+                {selectedFile && !isDeleting && (
+                    <button
+                        type="button"
+                        onClick={handleDelete}
+                        className="absolute top-4 right-4 bg-red-100 hover:bg-red-200 text-red-600 p-2 rounded-full transition-colors z-10"
+                        title="Remove file"
+                    >
+                        🗑️
+                    </button>
+                )}
+
+                <div className="pointer-events-none flex flex-col items-center">
+                    <span className="text-4xl mb-2" role="img" aria-label="Document">
+                        {isDragReject ? '❌' : selectedFile ? '✅' : '📄'}
+                    </span>
+                    <p className={`font-semibold mb-1 ${isDragReject ? 'text-red-600' : 'text-gray-800'}`}>
+                        {isDragReject 
+                            ? 'File rejected!' 
+                            : selectedFile 
+                                ? selectedFile.name 
+                                : isDragActive 
+                                    ? 'Drop it here!' 
+                                    : 'Click or drag to upload'}
+                    </p>
+                    <p className={`text-sm ${isDragReject ? 'text-red-500 font-semibold' : selectedFile ? 'text-green-600' : 'text-gray-500'}`}>
+                        {isDragReject 
+                            ? 'Max 10MB, PDF/DOC only' 
+                            : selectedFile 
+                                ? `(${formatSize(selectedFile.size)})`
+                                : 'PDF, DOC, DOCX (Max 10MB)'}
+                    </p>
+                </div>
+            </div>
         </div>
     );
 };
