@@ -1,0 +1,144 @@
+CODE DEEP DIVE: HOW TO USE THE FEATURES
+
+This document explains EXACTLY how the code works piece by piece so you can copy, paste, and modify it for your own features.
+
+=========================================
+1. HOW TO UPLOAD FILES & GET THE PDF TEXT
+=========================================
+
+File: `app/routes/upload.tsx`
+
+If you want to build a feature where a user uploads a PDF and your app reads the text inside it, here is the exact pattern to follow:
+
+Step A: Setup State
+Create a place in your component to store the raw File and the text you pull out of it.
+```javascript
+const [selectedFile, setSelectedFile] = useState<File | null>(null);
+const [extractedText, setExtractedText] = useState<string | null>(null);
+```
+
+Step B: The Effect Hook (The Magic)
+You need a `useEffect` that listens to `selectedFile`. The moment the user drops a file into the box, this code runs automatically.
+
+```javascript
+import { extractTextFromPdf } from "~/lib/pdfUtils"; // Import our custom reader
+
+useEffect(() => {
+    const parsePdf = async () => {
+        if (!selectedFile) return;
+
+        // Make sure they actually uploaded a PDF!
+        if (selectedFile.type === 'application/pdf') {
+            try {
+                console.log("Reading PDF...");
+
+                // This function opens the PDF, reads every page, and returns a massive string of text
+                const text = await extractTextFromPdf(selectedFile);
+
+                setExtractedText(text); // Save it!
+                console.log("Success! We got " + text.length + " characters of text.");
+
+            } catch (error) {
+                alert("Failed to read PDF.");
+            }
+        }
+    };
+
+    parsePdf();
+}, [selectedFile]); // This array tells React: "Run this function every time selectedFile changes"
+```
+
+
+=========================================
+2. HOW TO TRIGGER FRAMER MOTION ANIMATIONS
+=========================================
+
+File: `app/components/ResumeAnalyzerAnimation.tsx`
+
+Animations in React can be tricky because components normally just snap in and out of existence. Framer Motion makes it smooth.
+
+Step A: The Reusable Component
+We built the animations as completely separate components that take a function prop (`onAnimationComplete`).
+
+Step B: Triggering it
+In your main page (`upload.tsx`), you use a boolean state (`showAnimation`) to decide when to show the animation instead of the normal form.
+
+```javascript
+const [showAnimation, setShowAnimation] = useState(false);
+
+const handleButtonClick = () => {
+    // 1. Hide the form, show the animation
+    setShowAnimation(true);
+};
+
+const handleAnimationFinished = () => {
+    // 2. The animation component calls this when it's done
+    setShowAnimation(false);
+
+    // 3. Move on to the next step! (e.g. show the scanning GIF)
+    setIsProcessing(true);
+};
+
+// In your JSX:
+{showAnimation ? (
+    <ResumeAnalyzerAnimation onAnimationComplete={handleAnimationFinished} />
+) : (
+    <button onClick={handleButtonClick}>Start</button>
+)}
+```
+
+
+=========================================
+3. HOW TO USE PUTER.JS AUTHENTICATION
+=========================================
+
+File: `app/lib/puter.ts`
+
+Puter handles all your backend accounts automatically. We wrapped it in a "Zustand Store" so you can access it from ANY file without passing props down.
+
+```javascript
+import { usePuterStore } from "~/lib/puter";
+
+export default function MyPage() {
+    // Reach into the global store and grab exactly what you need
+    const { auth, isLoading } = usePuterStore();
+
+    // To check if they are logged in:
+    if (auth.isAuthenticated) {
+        console.log("Hello, " + auth.user?.username);
+    }
+
+    // To create a login button:
+    return (
+        <button onClick={auth.signIn}>Log In</button>
+    )
+}
+```
+
+
+=========================================
+4. HOW THE FORM VALIDATION WORKS
+=========================================
+
+File: `app/routes/upload.tsx`
+
+We want to force the user to either give us ALL the data (Title + Company + Description + File) or give us NOTHING.
+
+We do this by constantly checking the state variables as they type, and calculating a boolean `isFormValid` value before the component even renders the HTML.
+
+```javascript
+// 1. Grab what they typed
+const [jobTitle, setJobTitle] = useState("");
+const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+// 2. Calculate if the form is valid RIGHT NOW
+// The `.trim()` removes accidental spaces so "   " isn't counted as a valid title.
+const isFormValid = selectedFile !== null && jobTitle.trim() !== "";
+
+// 3. Disable the button if it's not valid
+<button disabled={!isFormValid} type="submit">
+    Submit
+</button>
+```
+
+By doing this, the button will automatically stay greyed out, and instantly turn purple the millisecond they finish filling out the last required field. No extra code needed!

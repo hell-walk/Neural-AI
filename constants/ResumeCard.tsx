@@ -1,7 +1,12 @@
-import { Link } from "react-router"; // or "react-router-dom" depending on your package.json
+import { Link } from "react-router"; 
 import ScoreCircle from "~/components/ScrollCircle";
 
 const ResumeCard = ({ resume: {id,companyName, jobTitle,feedback,imagePath } }: { resume: any }) => {
+    // The images are actually located inside /public/images/ relative to the static server
+    // Since Vite serves everything inside the outer 'public' directory at the root '/',
+    // and you have a nested 'public' folder inside it, the path needs to be adjusted.
+    const fixedImagePath = imagePath.replace('public/public/images/', '/public/images/');
+
     return (
         <Link
             to={`/resume/${id}`}
@@ -19,7 +24,7 @@ const ResumeCard = ({ resume: {id,companyName, jobTitle,feedback,imagePath } }: 
             <div className="gradient-border animate-in fade-in duration-1000">
                 <div className="w-full h-full">
                     <img
-                        src={imagePath}
+                        src={fixedImagePath}
                         alt="resume"
                         className="w-full h-87.5 max-sm:h-50 object-cover object-top"
                     />
@@ -29,5 +34,4 @@ const ResumeCard = ({ resume: {id,companyName, jobTitle,feedback,imagePath } }: 
     );
 };
 
-// THIS IS THE MOST IMPORTANT LINE
 export default ResumeCard;

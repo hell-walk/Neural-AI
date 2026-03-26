@@ -15,9 +15,8 @@ const Navbar = ({ isDemo = false }: NavbarProps) => {
 
     const handleSignOut = async () => {
         await auth.signOut();
-        // Since we are logging out, we definitely want to be on the auth page.
-        // We pass the current path as 'next' so they can return here if they log in again.
-        navigate(`/auth?next=${location.pathname}`);
+        // We ALWAYS want them to go to home after the next login, not the upload page
+        navigate('/auth?next=/');
     };
 
     return (

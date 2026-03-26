@@ -25,9 +25,9 @@ const ResumeAnalyzerAnimation: React.FC<ResumeAnalyzerAnimationProps> = ({ onAni
             <AnimatePresence>
                 {phase === "animating" && (
                     <>
-                        {/* The File Folder (Dustbin/Target) - Appears bottom left, waits, then shakes */}
+                        {/* The File Folder (Dustbin/Target) - Appears bottom center, waits, then shakes */}
                         <motion.div
-                            initial={{ scale: 0, opacity: 0, x: -100, y: 50 }}
+                            initial={{ scale: 0, opacity: 0, y: 50 }}
                             animate={{
                                 scale: [0, 1.2, 1, 1, 1.1, 0.9, 1.1, 1, 0],
                                 opacity: [0, 1, 1, 1, 1, 1, 1, 1, 0],
@@ -38,19 +38,19 @@ const ResumeAnalyzerAnimation: React.FC<ResumeAnalyzerAnimationProps> = ({ onAni
                                 times: [0, 0.2, 0.3, 0.6, 0.65, 0.7, 0.75, 0.8, 1],
                                 ease: "easeInOut"
                             }}
-                            className="absolute bottom-4 left-[20%] text-6xl z-10"
+                            className="absolute bottom-4 text-6xl z-10"
                         >
                             📁
                         </motion.div>
 
                         {/* The Paper (Document) - Arcs from center to the folder */}
                         <motion.div
-                            initial={{ scale: 1, opacity: 0, x: 50, y: 50 }}
+                            initial={{ scale: 1, opacity: 0, x: 0, y: 50 }}
                             animate={{
-                                x: [50, 0, -100], // Starts right, arcs up to center, shoots left to folder
+                                x: [0, 80, 0], // Starts center, arcs right, drops back to center
                                 y: [50, -120, 50], // Starts low, Arcs high up, drops down to folder
                                 scale: [1, 1.3, 0.2], // Grows while flying, shrinks when entering folder
-                                rotate: [0, 25, -180], // Spins through the air
+                                rotate: [0, 45, -180], // Spins through the air
                                 opacity: [0, 1, 1, 0] // Fades in, stays visible, fades out as it hits folder
                             }}
                             transition={{
@@ -72,7 +72,7 @@ const ResumeAnalyzerAnimation: React.FC<ResumeAnalyzerAnimationProps> = ({ onAni
                                 scale: [0, 2, 3.5]
                             }}
                             transition={{ delay: 1.6, duration: 0.4 }}
-                            className="absolute bottom-10 left-[23%] w-12 h-12 border-4 border-purple-400 rounded-full z-0"
+                            className="absolute bottom-10 w-12 h-12 border-4 border-purple-400 rounded-full z-0"
                         />
                     </>
                 )}
