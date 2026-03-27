@@ -1,0 +1,108 @@
+<svg width="794" height="1123" viewBox="0 0 794 1123" xmlns="http://www.w3.org/2000/svg" font-family="Georgia, 'Times New Roman', serif">
+  <!-- White background -->
+  <rect width="794" height="1123" fill="#ffffff"/>
+
+  <!-- Subtle right column background -->
+  <rect x="510" width="284" height="1123" fill="#f9f9f9"/>
+
+  <!-- Vertical separator -->
+  <line x1="510" y1="0" x2="510" y2="1123" stroke="#e0e0e0" stroke-width="1"/>
+
+  <!-- ── LEFT COLUMN ── -->
+
+  <!-- Name -->
+  <text x="36" y="52" fill="#1a1a1a" font-size="26" font-weight="bold">Ryan Peterson</text>
+  <text x="36" y="70" fill="#888888" font-size="9.5" font-family="Arial, sans-serif" letter-spacing="1.5">BUSINESS ANALYST</text>
+
+  <!-- Top divider -->
+  <line x1="36" y1="82" x2="494" y2="82" stroke="#e0e0e0" stroke-width="1"/>
+
+  <!-- EXPERIENCE -->
+  <text x="36" y="102" fill="#1a1a1a" font-size="10" font-weight="bold" font-family="Arial, sans-serif" letter-spacing="2">EXPERIENCE</text>
+  <line x1="36" y1="108" x2="494" y2="108" stroke="#1a1a1a" stroke-width="0.75"/>
+
+  <!-- Job 1 -->
+  <text x="36" y="126" fill="#1a1a1a" font-size="10" font-weight="bold" font-family="Arial, sans-serif">Operational Business Analyst</text>
+  <text x="494" y="126" text-anchor="end" fill="#999" font-size="8.5" font-family="Arial, sans-serif">2019 – Present</text>
+  <text x="36" y="140" fill="#666" font-size="9" font-family="Arial, sans-serif" font-style="italic">Synergy Partners  |  Chicago, IL</text>
+  <text x="36" y="156" fill="#666" font-size="8.5" font-family="Arial, sans-serif">▸ Analysed sales data and departmental workflows with external clients from Fetra</text>
+  <text x="48" y="168" fill="#666" font-size="8.5" font-family="Arial, sans-serif">and departments with actual figures and projected actuals of company CA levels.</text>
+  <text x="36" y="181" fill="#666" font-size="8.5" font-family="Arial, sans-serif">▸ Developed a reporting automation solution reducing manual effort by 60%.</text>
+  <text x="36" y="194" fill="#666" font-size="8.5" font-family="Arial, sans-serif">▸ Conducted root cause analysis on process inefficiencies, implementing corrections</text>
+  <text x="48" y="206" fill="#666" font-size="8.5" font-family="Arial, sans-serif">that improved operational efficiency across 3 departments by an average of 22%.</text>
+
+  <!-- Job 2 -->
+  <text x="36" y="224" fill="#1a1a1a" font-size="10" font-weight="bold" font-family="Arial, sans-serif">Junior Business Analyst</text>
+  <text x="494" y="224" text-anchor="end" fill="#999" font-size="8.5" font-family="Arial, sans-serif">2016 – 2019</text>
+  <text x="36" y="238" fill="#666" font-size="9" font-family="Arial, sans-serif" font-style="italic">Delta Consulting Group  |  New York, NY</text>
+  <text x="36" y="253" fill="#666" font-size="8.5" font-family="Arial, sans-serif">▸ Assisted senior analysts in gathering and documenting business requirements</text>
+  <text x="48" y="265" fill="#666" font-size="8.5" font-family="Arial, sans-serif">for a financial software integration project valued at $4.8M.</text>
+  <text x="36" y="278" fill="#666" font-size="8.5" font-family="Arial, sans-serif">▸ Created process flow diagrams and user stories to communicate requirements to dev teams.</text>
+  <text x="36" y="291" fill="#666" font-size="8.5" font-family="Arial, sans-serif">▸ Tested and validated software releases, identified 200+ defects before go-live.</text>
+
+  <!-- EDUCATION -->
+  <text x="36" y="316" fill="#1a1a1a" font-size="10" font-weight="bold" font-family="Arial, sans-serif" letter-spacing="2">EDUCATION</text>
+  <line x1="36" y1="322" x2="494" y2="322" stroke="#1a1a1a" stroke-width="0.75"/>
+
+  <!-- Degree 1 -->
+  <text x="36" y="340" fill="#1a1a1a" font-size="10" font-weight="bold" font-family="Arial, sans-serif">Master of Business Administration</text>
+  <text x="494" y="340" text-anchor="end" fill="#999" font-size="8.5" font-family="Arial, sans-serif">2014 – 2016</text>
+  <text x="36" y="354" fill="#777" font-size="9" font-family="Arial, sans-serif">University of Illinois at Chicago</text>
+  <text x="48" y="366" fill="#999" font-size="8.5" font-family="Arial, sans-serif">Concentration: Business Analytics</text>
+
+  <!-- Degree 2 -->
+  <text x="36" y="385" fill="#1a1a1a" font-size="10" font-weight="bold" font-family="Arial, sans-serif">Bachelor of Commerce (Finance)</text>
+  <text x="494" y="385" text-anchor="end" fill="#999" font-size="8.5" font-family="Arial, sans-serif">2010 – 2014</text>
+  <text x="36" y="399" fill="#777" font-size="9" font-family="Arial, sans-serif">DePaul University, Chicago</text>
+
+  <!-- ── RIGHT COLUMN ── -->
+
+  <!-- Contact -->
+  <text x="526" y="28" fill="#555" font-size="8.5" font-family="Arial, sans-serif">✆  +1 312 555 0192</text>
+  <text x="526" y="42" fill="#555" font-size="8.5" font-family="Arial, sans-serif">✉  ryan@email.com</text>
+  <text x="526" y="56" fill="#555" font-size="8.5" font-family="Arial, sans-serif">⚑  linkedin.com/in/ryanpeterson</text>
+  <text x="526" y="70" fill="#555" font-size="8.5" font-family="Arial, sans-serif">⌂  Chicago, Illinois</text>
+
+  <!-- Right divider -->
+  <line x1="526" y1="82" x2="774" y2="82" stroke="#e0e0e0" stroke-width="1"/>
+
+  <!-- SKILLS -->
+  <text x="526" y="102" fill="#1a1a1a" font-size="10" font-weight="bold" font-family="Arial, sans-serif" letter-spacing="1.5">SKILLS</text>
+  <line x1="526" y1="108" x2="774" y2="108" stroke="#1a1a1a" stroke-width="0.75"/>
+
+  <!-- 2-column skills layout -->
+  <text x="526" y="124" fill="#555" font-size="8.5" font-family="Arial, sans-serif">• Business Analysis</text>
+  <text x="652" y="124" fill="#555" font-size="8.5" font-family="Arial, sans-serif">• Agile / Scrum</text>
+  <text x="526" y="138" fill="#555" font-size="8.5" font-family="Arial, sans-serif">• Data Analysis</text>
+  <text x="652" y="138" fill="#555" font-size="8.5" font-family="Arial, sans-serif">• SQL / Tableau</text>
+  <text x="526" y="152" fill="#555" font-size="8.5" font-family="Arial, sans-serif">• Process Mapping</text>
+  <text x="652" y="152" fill="#555" font-size="8.5" font-family="Arial, sans-serif">• Excel (Advanced)</text>
+  <text x="526" y="166" fill="#555" font-size="8.5" font-family="Arial, sans-serif">• Requirements Gathering</text>
+  <text x="652" y="166" fill="#555" font-size="8.5" font-family="Arial, sans-serif">• Stakeholder Mgmt</text>
+  <text x="526" y="180" fill="#555" font-size="8.5" font-family="Arial, sans-serif">• JIRA / Confluence</text>
+  <text x="652" y="180" fill="#555" font-size="8.5" font-family="Arial, sans-serif">• Power BI</text>
+
+  <!-- LANGUAGES -->
+  <text x="526" y="206" fill="#1a1a1a" font-size="10" font-weight="bold" font-family="Arial, sans-serif" letter-spacing="1.5">LANGUAGES</text>
+  <line x1="526" y1="212" x2="774" y2="212" stroke="#1a1a1a" stroke-width="0.75"/>
+
+  <text x="526" y="228" fill="#333" font-size="9" font-weight="bold" font-family="Arial, sans-serif">English</text>
+  <text x="526" y="240" fill="#999" font-size="8" font-family="Arial, sans-serif">Native</text>
+
+  <text x="526" y="258" fill="#333" font-size="9" font-weight="bold" font-family="Arial, sans-serif">Spanish</text>
+  <text x="526" y="270" fill="#999" font-size="8" font-family="Arial, sans-serif">Intermediate</text>
+
+  <text x="526" y="288" fill="#333" font-size="9" font-weight="bold" font-family="Arial, sans-serif">French</text>
+  <text x="526" y="300" fill="#999" font-size="8" font-family="Arial, sans-serif">Basic</text>
+
+  <!-- CERTIFICATIONS -->
+  <text x="526" y="326" fill="#1a1a1a" font-size="10" font-weight="bold" font-family="Arial, sans-serif" letter-spacing="1.5">CERTIFICATIONS</text>
+  <line x1="526" y1="332" x2="774" y2="332" stroke="#1a1a1a" stroke-width="0.75"/>
+
+  <text x="526" y="348" fill="#555" font-size="8.5" font-family="Arial, sans-serif">• CBAP (Certified Business</text>
+  <text x="534" y="360" fill="#555" font-size="8.5" font-family="Arial, sans-serif">Analysis Professional)</text>
+  <text x="526" y="376" fill="#555" font-size="8.5" font-family="Arial, sans-serif">• Google Analytics Individual</text>
+  <text x="534" y="388" fill="#555" font-size="8.5" font-family="Arial, sans-serif">Qualification</text>
+  <text x="526" y="404" fill="#555" font-size="8.5" font-family="Arial, sans-serif">• PMP – Project Management</text>
+  <text x="534" y="416" fill="#555" font-size="8.5" font-family="Arial, sans-serif">Professional (PMI)</text>
+</svg>

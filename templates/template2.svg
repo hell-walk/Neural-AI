@@ -1,0 +1,143 @@
+<svg width="794" height="1123" viewBox="0 0 794 1123" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <clipPath id="photoClip">
+      <circle cx="120" cy="100" r="58"/>
+    </clipPath>
+  </defs>
+
+  <!-- White background -->
+  <rect width="794" height="1123" fill="#ffffff"/>
+
+  <!-- Dark sidebar -->
+  <rect width="240" height="1123" fill="#1e1f3b"/>
+
+  <!-- Orange top accent strip on sidebar -->
+  <rect width="240" height="6" fill="#e8723f"/>
+
+  <!-- Sidebar: Photo circle placeholder -->
+  <circle cx="120" cy="100" r="60" fill="#2d2f55"/>
+  <circle cx="120" cy="100" r="60" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.2"/>
+  <!-- Silhouette -->
+  <circle cx="120" cy="83" r="22" fill="#4a4c7a"/>
+  <ellipse cx="120" cy="135" rx="34" ry="25" fill="#4a4c7a"/>
+
+  <!-- Sidebar: Name -->
+  <text x="120" y="180" text-anchor="middle" fill="#ffffff" font-size="16" font-weight="bold" font-family="Arial Black, Arial, sans-serif">ANDREW CLARK</text>
+  <text x="120" y="196" text-anchor="middle" fill="#9a9bbf" font-size="8.5" letter-spacing="1">SENIOR PROJECT MANAGER</text>
+
+  <!-- Sidebar: divider -->
+  <line x1="20" y1="208" x2="220" y2="208" stroke="#3a3c66" stroke-width="1"/>
+
+  <!-- Sidebar: Contact -->
+  <text x="120" y="222" text-anchor="middle" fill="#c0c2e0" font-size="8.5">+1 234 567 8901</text>
+  <text x="120" y="235" text-anchor="middle" fill="#c0c2e0" font-size="8.5">andrew@email.com</text>
+  <text x="120" y="248" text-anchor="middle" fill="#c0c2e0" font-size="8.5">linkedin.com/in/andrewclark</text>
+  <text x="120" y="261" text-anchor="middle" fill="#c0c2e0" font-size="8.5">New York, NY</text>
+
+  <!-- Sidebar: divider -->
+  <line x1="20" y1="272" x2="220" y2="272" stroke="#3a3c66" stroke-width="1"/>
+
+  <!-- Sidebar: Skills -->
+  <text x="20" y="288" fill="#ffffff" font-size="10" font-weight="bold" letter-spacing="1">SKILLS</text>
+
+  <circle cx="26" cy="302" r="2.5" fill="#e8723f"/>
+  <text x="34" y="305" fill="#c8c9e5" font-size="8.5">Project Management</text>
+  <circle cx="26" cy="316" r="2.5" fill="#e8723f"/>
+  <text x="34" y="319" fill="#c8c9e5" font-size="8.5">Leadership</text>
+  <circle cx="26" cy="330" r="2.5" fill="#e8723f"/>
+  <text x="34" y="333" fill="#c8c9e5" font-size="8.5">Productivity</text>
+  <circle cx="26" cy="344" r="2.5" fill="#e8723f"/>
+  <text x="34" y="347" fill="#c8c9e5" font-size="8.5">Delivery Tools</text>
+  <circle cx="26" cy="358" r="2.5" fill="#e8723f"/>
+  <text x="34" y="361" fill="#c8c9e5" font-size="8.5">Microsoft Word</text>
+  <circle cx="26" cy="372" r="2.5" fill="#e8723f"/>
+  <text x="34" y="375" fill="#c8c9e5" font-size="8.5">PowerPoint</text>
+  <circle cx="26" cy="386" r="2.5" fill="#e8723f"/>
+  <text x="34" y="389" fill="#c8c9e5" font-size="8.5">Microsoft Office</text>
+  <circle cx="26" cy="400" r="2.5" fill="#e8723f"/>
+  <text x="34" y="403" fill="#c8c9e5" font-size="8.5">Google Suite</text>
+
+  <!-- Sidebar: divider -->
+  <line x1="20" y1="414" x2="220" y2="414" stroke="#3a3c66" stroke-width="1"/>
+
+  <!-- Sidebar: Languages -->
+  <text x="20" y="430" fill="#ffffff" font-size="10" font-weight="bold" letter-spacing="1">LANGUAGES</text>
+
+  <text x="20" y="446" fill="#c8c9e5" font-size="8.5">English</text>
+  <circle cx="148" cy="442" r="4" fill="#e8723f"/>
+  <circle cx="160" cy="442" r="4" fill="#e8723f"/>
+  <circle cx="172" cy="442" r="4" fill="#e8723f"/>
+  <circle cx="184" cy="442" r="4" fill="#e8723f"/>
+  <circle cx="196" cy="442" r="4" fill="#2d3060"/>
+
+  <text x="20" y="462" fill="#c8c9e5" font-size="8.5">Spanish</text>
+  <circle cx="148" cy="458" r="4" fill="#e8723f"/>
+  <circle cx="160" cy="458" r="4" fill="#e8723f"/>
+  <circle cx="172" cy="458" r="4" fill="#e8723f"/>
+  <circle cx="184" cy="458" r="4" fill="#2d3060"/>
+  <circle cx="196" cy="458" r="4" fill="#2d3060"/>
+
+  <!-- Orange accent bar between sidebar and content -->
+  <rect x="240" width="3" height="1123" fill="#e8723f"/>
+
+  <!-- ── RIGHT COLUMN ── -->
+
+  <!-- Name header right side -->
+  <text x="260" y="48" fill="#1e1f3b" font-size="22" font-weight="bold" font-family="Arial Black, Arial, sans-serif">ANDREW CLARK</text>
+  <text x="260" y="66" fill="#e8723f" font-size="10">Senior Project Manager  |  IT Leadership  |  Team Management</text>
+  <line x1="260" y1="76" x2="774" y2="76" stroke="#e8e8e8" stroke-width="1"/>
+
+  <!-- Summary -->
+  <text x="260" y="96" fill="#1e1f3b" font-size="10.5" font-weight="bold" letter-spacing="1">SUMMARY</text>
+  <line x1="260" y1="101" x2="774" y2="101" stroke="#e8723f" stroke-width="2"/>
+  <text x="260" y="117" fill="#555" font-size="9">Seasoned project manager with 12+ years of experience delivering complex IT and infrastructure projects</text>
+  <text x="260" y="130" fill="#555" font-size="9">on time and within budget. Skilled at building high-performance teams, stakeholder communication,</text>
+  <text x="260" y="143" fill="#555" font-size="9">and navigating cross-functional challenges in fast-paced enterprise environments.</text>
+
+  <!-- Experience -->
+  <text x="260" y="168" fill="#1e1f3b" font-size="10.5" font-weight="bold" letter-spacing="1">EXPERIENCE</text>
+  <line x1="260" y1="173" x2="774" y2="173" stroke="#e8723f" stroke-width="2"/>
+
+  <!-- Timeline line -->
+  <line x1="265" y1="185" x2="265" y2="680" stroke="#e8e8e8" stroke-width="1.5"/>
+
+  <!-- Job 1 -->
+  <circle cx="265" cy="190" r="5" fill="#e8723f"/>
+  <text x="280" y="193" fill="#1e1f3b" font-size="10" font-weight="bold">Senior IT Project Manager</text>
+  <text x="774" y="193" text-anchor="end" fill="#999" font-size="8.5">Jan 2020 – Present</text>
+  <text x="280" y="207" fill="#e8723f" font-size="9">TechGlobal Corp  •  New York, NY</text>
+  <text x="280" y="222" fill="#666" font-size="9">– Directed end-to-end delivery of 15+ enterprise software deployments worth $50M+ in project value.</text>
+  <text x="280" y="235" fill="#666" font-size="9">– Led cross-functional teams of 20+ members across design, engineering, QA and operations.</text>
+  <text x="280" y="248" fill="#666" font-size="9">– Reduced project overrun incidents by 40% through improved risk assessment frameworks.</text>
+
+  <!-- Job 2 -->
+  <circle cx="265" cy="270" r="5" fill="#e8723f"/>
+  <text x="280" y="273" fill="#1e1f3b" font-size="10" font-weight="bold">IT Project Manager</text>
+  <text x="774" y="273" text-anchor="end" fill="#999" font-size="8.5">Mar 2016 – Dec 2019</text>
+  <text x="280" y="287" fill="#e8723f" font-size="9">InnovateSoft  •  Boston, MA</text>
+  <text x="280" y="302" fill="#666" font-size="9">– Managed Agile development cycles for SaaS platform serving 500K+ users.</text>
+  <text x="280" y="315" fill="#666" font-size="9">– Partnered with C-suite to align technology roadmap with 3-year strategic plan.</text>
+  <text x="280" y="328" fill="#666" font-size="9">– Introduced automated reporting dashboards, saving 8 hours per week per team lead.</text>
+
+  <!-- Job 3 -->
+  <circle cx="265" cy="350" r="5" fill="#e8723f"/>
+  <text x="280" y="353" fill="#1e1f3b" font-size="10" font-weight="bold">Associate Project Manager</text>
+  <text x="774" y="353" text-anchor="end" fill="#999" font-size="8.5">Jun 2012 – Feb 2016</text>
+  <text x="280" y="367" fill="#e8723f" font-size="9">Digital Ventures Inc  •  Chicago, IL</text>
+  <text x="280" y="382" fill="#666" font-size="9">– Coordinated project schedules, budgets and resource allocation for 8 simultaneous projects.</text>
+  <text x="280" y="395" fill="#666" font-size="9">– Facilitated sprint planning, retrospectives and daily standups for 3 Agile teams.</text>
+
+  <!-- Education -->
+  <text x="260" y="430" fill="#1e1f3b" font-size="10.5" font-weight="bold" letter-spacing="1">EDUCATION</text>
+  <line x1="260" y1="435" x2="774" y2="435" stroke="#e8723f" stroke-width="2"/>
+
+  <circle cx="265" cy="452" r="5" fill="#e8723f"/>
+  <text x="280" y="455" fill="#1e1f3b" font-size="10" font-weight="bold">MBA – Technology Management</text>
+  <text x="774" y="455" text-anchor="end" fill="#999" font-size="8.5">2010 – 2012</text>
+  <text x="280" y="469" fill="#777" font-size="9">NYU Stern School of Business</text>
+
+  <circle cx="265" cy="488" r="5" fill="#e8723f"/>
+  <text x="280" y="491" fill="#1e1f3b" font-size="10" font-weight="bold">B.Sc. Computer Science</text>
+  <text x="774" y="491" text-anchor="end" fill="#999" font-size="8.5">2006 – 2010</text>
+  <text x="280" y="505" fill="#777" font-size="9">University of Michigan</text>
+</svg>

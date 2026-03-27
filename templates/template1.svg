@@ -1,0 +1,79 @@
+<svg width="794" height="1123" viewBox="0 0 794 1123" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+  <rect width="794" height="1123" fill="#ffffff"/>
+  <rect width="794" height="105" fill="#1e2235"/>
+  <rect y="105" width="794" height="5" fill="#2ecfcf"/>
+  <text x="397" y="48" text-anchor="middle" fill="#ffffff" font-size="28" font-weight="bold" letter-spacing="4" font-family="Arial Black, Arial, sans-serif">MICHAEL HARRIS</text>
+  <text x="397" y="68" text-anchor="middle" fill="#2ecfcf" font-size="10" letter-spacing="2">DIGITAL MARKETING  |  SEO  |  SEM  |  CONTENT MARKETING</text>
+  <text x="397" y="90" text-anchor="middle" fill="#9aa0b8" font-size="9">Sydney, Australia  •  michael@email.com  •  +61 412 345 678  •  linkedin.com/in/michaelharris</text>
+
+  <text x="40" y="132" fill="#1e2235" font-size="10.5" font-weight="bold" letter-spacing="1.5">PROFESSIONAL SUMMARY</text>
+  <line x1="40" y1="137" x2="754" y2="137" stroke="#2ecfcf" stroke-width="1.5"/>
+  <text x="40" y="153" fill="#444" font-size="9">Results-oriented marketing professional with over 6 years of experience in digital marketing, brand strategy and content creation.</text>
+  <text x="40" y="166" fill="#444" font-size="9">Proven track record of increasing organic traffic and social media engagement within the retail sector. Expert in utilising analytical</text>
+  <text x="40" y="179" fill="#444" font-size="9">tools to optimise marketing strategies and maximise ROI.</text>
+
+  <text x="40" y="206" fill="#1e2235" font-size="10.5" font-weight="bold" letter-spacing="1.5">WORK EXPERIENCE</text>
+  <line x1="40" y1="211" x2="754" y2="211" stroke="#2ecfcf" stroke-width="1.5"/>
+
+  <text x="40" y="229" fill="#1e2235" font-size="10" font-weight="bold">KPI Copywriters, Sydney</text>
+  <text x="754" y="229" text-anchor="end" fill="#888" font-size="9">January 2022 – Present</text>
+  <text x="40" y="243" fill="#2ecfcf" font-size="9.5" font-style="italic">Digital Marketing Specialist</text>
+  <circle cx="46" cy="256" r="2.5" fill="#2ecfcf"/>
+  <text x="56" y="259" fill="#555" font-size="9">Led customer-facing digital marketing strategies across multiple platforms including AdWords, Facebook, Instagram, SEO and email.</text>
+  <circle cx="46" cy="272" r="2.5" fill="#2ecfcf"/>
+  <text x="56" y="275" fill="#555" font-size="9">Increased organic traffic by 45% and achieved 30% boost in social media engagement within the first year.</text>
+  <circle cx="46" cy="288" r="2.5" fill="#2ecfcf"/>
+  <text x="56" y="291" fill="#555" font-size="9">Spearheaded A/B testing initiatives that resulted in a 25% improvement in email open rates.</text>
+
+  <text x="40" y="312" fill="#1e2235" font-size="10" font-weight="bold">ABC Solutions, Melbourne, VIC</text>
+  <text x="754" y="312" text-anchor="end" fill="#888" font-size="9">June 2019 – December 2021</text>
+  <text x="40" y="326" fill="#2ecfcf" font-size="9.5" font-style="italic">Digital Marketing Coordinator</text>
+  <circle cx="46" cy="339" r="2.5" fill="#2ecfcf"/>
+  <text x="56" y="342" fill="#555" font-size="9">Developed and implemented digital marketing campaigns across multiple platforms.</text>
+  <circle cx="46" cy="355" r="2.5" fill="#2ecfcf"/>
+  <text x="56" y="358" fill="#555" font-size="9">Collaborated with the sales team to align marketing strategies with business goals, achieving a 20% increase in lead generation.</text>
+  <circle cx="46" cy="371" r="2.5" fill="#2ecfcf"/>
+  <text x="56" y="374" fill="#555" font-size="9">Managed social media accounts, growing follower count by 35% and boosting engagement rates across all channels.</text>
+
+  <text x="40" y="396" fill="#1e2235" font-size="10" font-weight="bold">XYZ Agency, Sydney, NSW</text>
+  <text x="754" y="396" text-anchor="end" fill="#888" font-size="9">June 2018 – May 2019</text>
+  <text x="40" y="410" fill="#2ecfcf" font-size="9.5" font-style="italic">Marketing Assistant</text>
+  <circle cx="46" cy="423" r="2.5" fill="#2ecfcf"/>
+  <text x="56" y="426" fill="#555" font-size="9">Assisted with content creation, social media posting and scheduling across all brand channels.</text>
+  <circle cx="46" cy="439" r="2.5" fill="#2ecfcf"/>
+  <text x="56" y="442" fill="#555" font-size="9">Supported SEO and SEM efforts by conducting keyword research and reporting on campaign performance.</text>
+
+  <text x="40" y="468" fill="#1e2235" font-size="10.5" font-weight="bold" letter-spacing="1.5">EDUCATION</text>
+  <line x1="40" y1="473" x2="754" y2="473" stroke="#2ecfcf" stroke-width="1.5"/>
+  <text x="40" y="491" fill="#1e2235" font-size="10" font-weight="bold">Bachelor of Marketing</text>
+  <text x="754" y="491" text-anchor="end" fill="#888" font-size="9">2014 – 2018</text>
+  <text x="40" y="505" fill="#666" font-size="9.5">University of Sydney, NSW</text>
+
+  <text x="40" y="531" fill="#1e2235" font-size="10.5" font-weight="bold" letter-spacing="1.5">SKILLS</text>
+  <line x1="40" y1="536" x2="754" y2="536" stroke="#2ecfcf" stroke-width="1.5"/>
+  <circle cx="46" cy="552" r="2.5" fill="#2ecfcf"/>
+  <text x="56" y="555" fill="#444" font-size="9.5">Digital Marketing Strategy</text>
+  <circle cx="276" cy="552" r="2.5" fill="#2ecfcf"/>
+  <text x="286" y="555" fill="#444" font-size="9.5">SEO &amp; SEM</text>
+  <circle cx="46" cy="568" r="2.5" fill="#2ecfcf"/>
+  <text x="56" y="571" fill="#444" font-size="9.5">Content Marketing</text>
+  <circle cx="276" cy="568" r="2.5" fill="#2ecfcf"/>
+  <text x="286" y="571" fill="#444" font-size="9.5">Social Media Management</text>
+  <circle cx="46" cy="584" r="2.5" fill="#2ecfcf"/>
+  <text x="56" y="587" fill="#444" font-size="9.5">Google Analytics &amp; AdWords</text>
+  <circle cx="276" cy="584" r="2.5" fill="#2ecfcf"/>
+  <text x="286" y="587" fill="#444" font-size="9.5">Email Marketing</text>
+  <circle cx="46" cy="600" r="2.5" fill="#2ecfcf"/>
+  <text x="56" y="603" fill="#444" font-size="9.5">A/B Testing</text>
+  <circle cx="276" cy="600" r="2.5" fill="#2ecfcf"/>
+  <text x="286" y="603" fill="#444" font-size="9.5">Data Analysis &amp; Reporting</text>
+
+  <text x="40" y="630" fill="#1e2235" font-size="10.5" font-weight="bold" letter-spacing="1.5">CERTIFICATIONS</text>
+  <line x1="40" y1="635" x2="754" y2="635" stroke="#2ecfcf" stroke-width="1.5"/>
+  <circle cx="46" cy="651" r="2.5" fill="#2ecfcf"/>
+  <text x="56" y="654" fill="#444" font-size="9.5">Google Analytics Individual Qualification</text>
+  <circle cx="46" cy="667" r="2.5" fill="#2ecfcf"/>
+  <text x="56" y="670" fill="#444" font-size="9.5">HubSpot Content Marketing Certification</text>
+  <circle cx="46" cy="683" r="2.5" fill="#2ecfcf"/>
+  <text x="56" y="686" fill="#444" font-size="9.5">Facebook Blueprint Certification</text>
+</svg>

@@ -10,12 +10,11 @@ const Navbar = ({ isDemo = false }: NavbarProps) => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Check if we are currently on the upload page
     const isUploadPage = location.pathname === '/upload';
+    const isBuilderPage = location.pathname === '/builder';
 
     const handleSignOut = async () => {
         await auth.signOut();
-        // We ALWAYS want them to go to home after the next login, not the upload page
         navigate('/auth?next=/');
     };
 
@@ -28,6 +27,18 @@ const Navbar = ({ isDemo = false }: NavbarProps) => {
             </Link>
             
             <div className="flex items-center gap-4">
+                {/* Conditionally render the Resume Builder button */}
+                {!isBuilderPage && (
+                    <Link to={isDemo ? "/?demo=true" : "/builder"} onClick={(e) => {
+                        if (isDemo) {
+                            e.preventDefault();
+                            alert("Please log in to use the Resume Builder.");
+                        }
+                    }} className="primary-button w-fit">
+                        Resume Builder
+                    </Link>
+                )}
+
                 {/* Only show the Upload Resume button if we are NOT already on the upload page */}
                 {!isUploadPage && (
                     <Link to={isDemo ? "/?demo=true" : "/upload"} onClick={(e) => {
