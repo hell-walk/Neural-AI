@@ -4,6 +4,7 @@ import { usePuterStore } from "~/lib/puter";
 import Summary from "~/components/Summary";
 import ATS from "~/components/ATS";
 import Details from "~/components/Details";
+import { Feedback } from "constants/index"; // Import Feedback interface
 
 export const meta = () => ([
   { title: 'Neural-Ai | Review' },
@@ -16,7 +17,7 @@ const Resume = () => {
 
   const [resumeUrl, setResumeUrl] = useState<string | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [feedback, setFeedback] = useState<Feedback | null>(null);
+  const [feedback, setFeedback] = useState<Feedback | null>(null); // Apply Feedback type
   const navigate = useNavigate();
 
   useEffect(() => {

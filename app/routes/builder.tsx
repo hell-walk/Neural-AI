@@ -8,9 +8,18 @@ import LivePreview from '~/components/LivePreview';
 import { ExportButton } from '~/components/ExportButton';
 import { exportToWord } from '~/lib/wordExport'; // Import the Word export utility
 
+// Import Gemini SDK
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+// Initialize Gemini (ensure VITE_GEMINI_API_KEY is set in .env.local)
+// WARNING: Exposing API keys directly in client-side code is not recommended for production.
+// For production, consider using a backend proxy.
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY as string);
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // Changed model to "gemini-1.5-flash"
+
 const Builder = () => {
     const navigate = useNavigate();
-    const { kv, ai } = usePuterStore();
+    const { kv } = usePuterStore(); // Removed 'ai' from here
     const [isProcessing, setIsProcessing] = useState(false);
     
     // Form States
@@ -84,17 +93,28 @@ const Builder = () => {
 
             const systemPrompt = prepareResumeGenerationInstructions(userInput);
 
-            const aiResponse: any = await ai.chat([
-                { role: "system", content: systemPrompt },
-                { role: "user", content: "Please generate the resume JSON based on the information I provided." }
-            ]);
+            // --- Gemini Integration Start ---
+            const fullPrompt = `${systemPrompt}\n\nPlease generate the resume JSON based on the information I provided.`;
+            const result = await model.generateContent(fullPrompt);
+            const response = await result.response;
+            const geminiResponseText = response.text(); // Gemini's response is directly accessible via .text()
 
-            const rawResponseText = aiResponse?.message?.content || aiResponse?.text || aiResponse;
-            const jsonMatch = rawResponseText.match(/\{[\s\S]*\}/);
-            if (!jsonMatch) {
+            console.log('Gemini raw response for builder:', geminiResponseText);
+
+            // Attempt to parse JSON, handle potential markdown wrapping
+            let generatedResume;
+            try {
+                const jsonMatch = geminiResponseText.match(/\{[\s\S]*\}/);
+                if (jsonMatch) {
+                    generatedResume = JSON.parse(jsonMatch[0]);
+                } else {
+                    generatedResume = JSON.parse(geminiResponseText);
+                }
+            } catch (jsonParseError) {
+                console.error("Failed to parse Gemini JSON response for builder:", geminiResponseText, jsonParseError);
                 throw new Error("AI did not return valid JSON.");
             }
-            const generatedResume = JSON.parse(jsonMatch[0]);
+            // --- Gemini Integration End ---
 
             const finalData = {
                 id: uuid,

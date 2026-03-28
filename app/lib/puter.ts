@@ -19,18 +19,6 @@ declare global {
                 delete: (path: string) => Promise<void>;
                 readdir: (path: string) => Promise<FSItem[] | undefined>;
             };
-            ai: {
-                chat: (
-                    prompt: string | ChatMessage[],
-                    imageURL?: string | PuterChatOptions,
-                    testMode?: boolean,
-                    options?: PuterChatOptions
-                ) => Promise<Object>;
-                img2txt: (
-                    image: string | File | Blob,
-                    testMode?: boolean
-                ) => Promise<string>;
-            };
             kv: {
                 get: (key: string) => Promise<string | null>;
                 set: (key: string, value: string) => Promise<boolean>;
@@ -65,22 +53,6 @@ interface PuterStore {
         delete: (path: string) => Promise<void>;
         readDir: (path: string) => Promise<FSItem[] | undefined>;
     };
-    ai: {
-        chat: (
-            prompt: string | ChatMessage[],
-            imageURL?: string | PuterChatOptions,
-            testMode?: boolean,
-            options?: PuterChatOptions
-        ) => Promise<AIResponse | undefined>;
-        feedback: (
-            path: string,
-            message: string
-        ) => Promise<AIResponse | undefined>;
-        img2txt: (
-            image: string | File | Blob,
-            testMode?: boolean
-        ) => Promise<string | undefined>;
-    };
     kv: {
         get: (key: string) => Promise<string | null | undefined>;
         set: (key: string, value: string) => Promise<boolean | undefined>;
@@ -98,9 +70,6 @@ interface PuterStore {
 
 const getPuter = (): typeof window.puter | null =>
     typeof window !== "undefined" && window.puter ? window.puter : null;
-
-// Track initialization globally to avoid duplicate setIntervals across hot reloads
-let isPuterInitializing = false;
 
 export const usePuterStore = create<PuterStore>((set, get) => {
     const setError = (msg: string) => {
@@ -255,37 +224,6 @@ export const usePuterStore = create<PuterStore>((set, get) => {
         }
     };
 
-    const init = (): void => {
-        // Prevent multiple initialization loops
-        if (isPuterInitializing || get().puterReady) return;
-        isPuterInitializing = true;
-
-        const puter = getPuter();
-        if (puter) {
-            set({ puterReady: true });
-            checkAuthStatus();
-            isPuterInitializing = false;
-            return;
-        }
-
-        let attempts = 0;
-        const maxAttempts = 100; // 10 seconds at 100ms interval
-
-        const interval = setInterval(() => {
-            attempts++;
-            if (getPuter()) {
-                clearInterval(interval);
-                set({ puterReady: true });
-                checkAuthStatus();
-                isPuterInitializing = false;
-            } else if (attempts >= maxAttempts) {
-                clearInterval(interval);
-                setError("Puter.js failed to load within 10 seconds");
-                isPuterInitializing = false;
-            }
-        }, 100);
-    };
-
     const write = async (path: string, data: string | File | Blob) => {
         const puter = getPuter();
         if (!puter) {
@@ -329,59 +267,6 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             return;
         }
         return puter.fs.delete(path);
-    };
-
-    const chat = async (
-        prompt: string | ChatMessage[],
-        imageURL?: string | PuterChatOptions,
-        testMode?: boolean,
-        options?: PuterChatOptions
-    ) => {
-        const puter = getPuter();
-        if (!puter) {
-            setError("Puter.js not available");
-            return;
-        }
-        // return puter.ai.chat(prompt, imageURL, testMode, options);
-        return puter.ai.chat(prompt, imageURL, testMode, options) as Promise<
-            AIResponse | undefined
-        >;
-    };
-
-    const feedback = async (path: string, message: string) => {
-        const puter = getPuter();
-        if (!puter) {
-            setError("Puter.js not available");
-            return;
-        }
-
-        return puter.ai.chat(
-            [
-                {
-                    role: "user",
-                    content: [
-                        {
-                            type: "file",
-                            puter_path: path,
-                        },
-                        {
-                            type: "text",
-                            text: message,
-                        },
-                    ],
-                },
-            ],
-            { model: "claude-sonnet-4" }
-        ) as Promise<AIResponse | undefined>;
-    };
-
-    const img2txt = async (image: string | File | Blob, testMode?: boolean) => {
-        const puter = getPuter();
-        if (!puter) {
-            setError("Puter.js not available");
-            return;
-        }
-        return puter.ai.img2txt(image, testMode);
     };
 
     const getKV = async (key: string) => {
@@ -452,17 +337,6 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             upload: (files: File[] | Blob[]) => upload(files),
             delete: (path: string) => deleteFile(path),
         },
-        ai: {
-            chat: (
-                prompt: string | ChatMessage[],
-                imageURL?: string | PuterChatOptions,
-                testMode?: boolean,
-                options?: PuterChatOptions
-            ) => chat(prompt, imageURL, testMode, options),
-            feedback: (path: string, message: string) => feedback(path, message),
-            img2txt: (image: string | File | Blob, testMode?: boolean) =>
-                img2txt(image, testMode),
-        },
         kv: {
             get: (key: string) => getKV(key),
             set: (key: string, value: string) => setKV(key, value),
@@ -471,7 +345,31 @@ export const usePuterStore = create<PuterStore>((set, get) => {
                 listKV(pattern, returnValues),
             flush: () => flushKV(),
         },
-        init,
+        init: (): void => {
+            if (get().puterReady) return;
+
+            const puter = getPuter();
+            if (puter) {
+                set({ puterReady: true });
+                get().auth.checkAuthStatus();
+                return;
+            }
+
+            let attempts = 0;
+            const maxAttempts = 100;
+
+            const interval = setInterval(() => {
+                attempts++;
+                if (getPuter()) {
+                    clearInterval(interval);
+                    set({ puterReady: true });
+                    get().auth.checkAuthStatus();
+                } else if (attempts >= maxAttempts) {
+                    clearInterval(interval);
+                    setError("Puter.js failed to load within 10 seconds");
+                }
+            }, 100);
+        },
         clearError: () => set({ error: null }),
     };
 });

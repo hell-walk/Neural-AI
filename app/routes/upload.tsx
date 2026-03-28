@@ -8,10 +8,16 @@ import { generateUUID } from "~/lib/utility";
 import { prepareInstructions, AIResponseFormat } from "../../constants";
 import { extractTextFromPdf } from "~/lib/pdfUtils";
 import ClearTextButton from "~/components/ClearTextButton";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
+// Initialize Gemini (ensure VITE_GEMINI_API_KEY is set in .env.local)
+// WARNING: Exposing API keys directly in client-side code is not recommended for production.
+// For production, consider using a backend proxy.
+const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY as string);
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // Changed model to "gemini-1.5-flash"
 
 const Upload = () => {
-    const { auth, isLoading, fs, ai, kv} = usePuterStore();
+    const { auth, isLoading, fs, kv} = usePuterStore(); // Removed 'ai' from here
     const navigate = useNavigate();
 
     // Basic state for our form
@@ -34,12 +40,15 @@ const Upload = () => {
     useEffect(() => {
         const processFile = async () => {
             if (file) {
+                setStatusText('Extracting text from resume...');
                 try {
                     const text = await extractTextFromPdf(file);
                     setExtractedText(text);
+                    setStatusText('Text extraction complete.');
                 } catch (error) {
                     console.error("Error extracting text:", error);
                     setExtractedText(null);
+                    setStatusText('Error extracting text from resume.');
                 }
             } else {
                 setExtractedText(null);
@@ -65,7 +74,7 @@ const Upload = () => {
         setStatusText("Processing your input...");
 
         if (!file || !jobTitle.trim() || !companyName.trim() || !jobDescription.trim() || !extractedText) {
-            setStatusText('Error: Missing required data.');
+            setStatusText('Error: Missing required data (file, job details, or extracted text).');
             setIsProcessing(false);
             return;
         }
@@ -110,38 +119,33 @@ const Upload = () => {
             // Save initial data to KV
             await kv.set(`resume:${uuid}`, JSON.stringify(data));
 
-            setStatusText('Analyzing...');
+            setStatusText('Analyzing with Gemini...');
             const systemPrompt = prepareInstructions({ jobTitle, jobDescription, AIResponseFormat });
-            const feedback = await ai.chat([
-                { role: "system", content: systemPrompt },
-                { role: "user", content: `Here is the resume text to analyze:\n\n${extractedText}` }
-            ]);
+            
+            // --- Gemini Integration Start ---
+            const fullPrompt = `${systemPrompt}\n\nResume Content:\n${extractedText}`;
+            const result = await model.generateContent(fullPrompt);
+            const response = await result.response;
+            const geminiFeedbackText = response.text(); // Gemini's response is directly accessible via .text()
 
-            if(!feedback) {
-                setStatusText('Error: Failed To Analyze Resume');
-                setIsProcessing(false);
-                return;
-            }
-
-            const feedbackText = typeof feedback.message.content === 'string'
-                ? feedback.message.content
-                : feedback.message.content[0].text;
+            console.log('Gemini raw response:', geminiFeedbackText);
 
             // Attempt to parse JSON, handle potential markdown wrapping
             let parsedFeedback;
             try {
-                const jsonMatch = feedbackText.match(/\{[\s\S]*\}/);
+                const jsonMatch = geminiFeedbackText.match(/\{[\s\S]*\}/);
                 if (jsonMatch) {
                     parsedFeedback = JSON.parse(jsonMatch[0]);
                 } else {
-                    parsedFeedback = JSON.parse(feedbackText);
+                    parsedFeedback = JSON.parse(geminiFeedbackText);
                 }
             } catch (jsonError) {
-                console.error("Failed to parse AI JSON response:", feedbackText, jsonError);
-                setStatusText('Error: AI returned invalid format.');
+                console.error("Failed to parse Gemini JSON response:", geminiFeedbackText, jsonError);
+                setStatusText('Error: Gemini returned invalid format.');
                 setIsProcessing(false);
                 return;
             }
+            // --- Gemini Integration End ---
 
             data.feedback = parsedFeedback;
             await kv.set(`resume:${uuid}`, JSON.stringify(data)); // Update with feedback
@@ -158,7 +162,7 @@ const Upload = () => {
             setStatusText(`Error: ${error instanceof Error ? error.message : String(error)}`);
             setIsProcessing(false);
         }
-    }, [file, jobTitle, companyName, jobDescription, extractedText, fs, ai, kv, navigate]);
+    }, [file, jobTitle, companyName, jobDescription, extractedText, fs, kv, navigate]);
 
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
