@@ -12,8 +12,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ filename = "My_Resum
 
         try {
             // Find the element that contains the SVG we want to print
-            // We use the data attribute we placed in the templates earlier
-            const element = document.querySelector('[data-resume-preview="true"]');
+            const element = document.querySelector('.preview-section svg');
             
             if (!element) {
                 alert("Preview not found. Please generate a resume first.");

@@ -5,6 +5,8 @@ import { usePuterStore } from "~/lib/puter";
 import { generateUUID } from "~/lib/utility";
 import { ResumeAIResponseFormat, prepareResumeGenerationInstructions } from '../../constants';
 import LivePreview from '~/components/LivePreview';
+import { ExportButton } from '~/components/ExportButton';
+import { exportToWord } from '~/lib/wordExport'; // Import the Word export utility
 
 const Builder = () => {
     const navigate = useNavigate();
@@ -117,17 +119,40 @@ const Builder = () => {
         }
     };
 
+    // Handler for Export to Word button
+    const handleExportWord = () => {
+        if (generatedResumeData) {
+            const filename = `${generatedResumeData.personalInfo?.name?.replace(/\s+/g, '_') || 'Resume'}.doc`;
+            exportToWord(generatedResumeData, filename);
+        }
+    };
+
     const hasData = name.trim() !== "" || 
                     email.trim() !== "" || 
                     phoneNumber.trim() !== "";
 
     return (
         <main className="min-h-screen bg-gray-50 flex flex-col">
-            <nav className="resume-nav p-4 bg-white shadow-sm relative z-50 flex justify-between items-center">
-                <Link to="/" className="back-button flex items-center gap-2 w-fit">
-                    <img src="/public/icons/back.svg" alt="Back" className="w-2.5 h-2.5" />
-                    <span className="text-gray-800 text-sm font-semibold">Back To Homepage</span>
-                </Link>
+            <nav className="resume-nav p-4 bg-white shadow-sm relative z-50 flex justify-between items-center flex-wrap gap-4">
+                <div className="flex items-center gap-4">
+                    <Link to="/" className="back-button flex items-center gap-2 w-fit">
+                        <img src="/public/icons/back.svg" alt="Back" className="w-2.5 h-2.5" />
+                        <span className="text-gray-800 text-sm font-semibold hidden md:inline-block">Back To Homepage</span>
+                    </Link>
+                    
+                    {/* Export Buttons (only visible when resume is generated) */}
+                    {generatedResumeData && (
+                        <div className="hidden lg:flex border-l border-gray-200 pl-4 ml-2 gap-2">
+                             <ExportButton filename={generatedResumeData.personalInfo?.name || "My_Resume"} />
+                             <button 
+                                onClick={handleExportWord}
+                                className="bg-blue-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-blue-700 font-medium text-sm transition-colors flex items-center gap-2"
+                             >
+                                 <span>📄</span> Export Word
+                             </button>
+                        </div>
+                    )}
+                </div>
                 
                 {/* Template Selection Toggle */}
                 <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-lg">
@@ -161,6 +186,19 @@ const Builder = () => {
                     <div className="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-purple-700 shadow-sm border border-purple-100 uppercase tracking-wide">
                         {selectedTemplate} Active
                     </div>
+
+                    {/* Mobile Export Buttons (only visible on small screens when generated) */}
+                    {generatedResumeData && (
+                        <div className="absolute bottom-4 right-4 z-10 lg:hidden flex flex-col gap-2">
+                            <ExportButton filename={generatedResumeData.personalInfo?.name || "My_Resume"} />
+                            <button 
+                                onClick={handleExportWord}
+                                className="bg-blue-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-blue-700 font-medium text-sm transition-colors flex items-center gap-2 justify-center"
+                             >
+                                 <span>📄</span> Export Word
+                             </button>
+                        </div>
+                    )}
                     
                     {isProcessing ? (
                         <div className="flex flex-col items-center gap-4">
