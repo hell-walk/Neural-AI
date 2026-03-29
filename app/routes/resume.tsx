@@ -4,7 +4,27 @@ import { usePuterStore } from "~/lib/puter";
 import Summary from "~/components/Summary";
 import ATS from "~/components/ATS";
 import Details from "~/components/Details";
-import { Feedback } from "constants/index"; // Import Feedback interface
+
+// Define the Feedback interface directly in this file
+export interface FeedbackTip {
+    type: "good" | "improve";
+    tip: string;
+    explanation?: string;
+}
+
+export interface FeedbackSection {
+    score: number;
+    tips: FeedbackTip[];
+}
+
+export interface Feedback {
+    overallScore: number;
+    ATS: FeedbackSection;
+    toneAndStyle: FeedbackSection;
+    content: FeedbackSection;
+    structure: FeedbackSection;
+    skills: FeedbackSection;
+}
 
 export const meta = () => ([
   { title: 'Neural-Ai | Review' },

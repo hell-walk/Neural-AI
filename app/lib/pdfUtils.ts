@@ -17,32 +17,46 @@ let loadPromise: Promise<any> | null = null;
 
 async function loadPdfJs(): Promise<any> {
   // If we are on the server (SSR), return null to avoid crashing
-  if (typeof window === 'undefined') return null;
+  if (typeof window === 'undefined') {
+    console.log("loadPdfJs: Cannot run on server, returning null.");
+    return null;
+  }
   
-  if (pdfjsLib) return pdfjsLib;
-  if (loadPromise) return loadPromise;
+  if (pdfjsLib) {
+    // console.log("loadPdfJs: PDF.js library already loaded.");
+    return pdfjsLib;
+  }
+  if (loadPromise) {
+    // console.log("loadPdfJs: PDF.js library is currently loading.");
+    return loadPromise;
+  }
 
+  // console.log("loadPdfJs: Starting to load PDF.js library and worker...");
   isLoading = true;
   
-  // In modern Vite/Remix, the best way to handle pdf.js workers automatically 
-  // without copying files is to use the standard dynamic import for the worker itself.
   loadPromise = Promise.all([
       import('pdfjs-dist'),
-      // @ts-ignore - this relies on Vite's specific import syntax which TS might complain about
+      // @ts-ignore
       import('pdfjs-dist/build/pdf.worker.mjs?worker')
   ]).then(([lib, WorkerModule]) => {
-      // Instantiate the worker class that Vite bundled for us
+      // console.log("loadPdfJs: Successfully imported PDF.js library and worker module.");
       lib.GlobalWorkerOptions.workerPort = new WorkerModule.default();
       pdfjsLib = lib;
       isLoading = false;
+      // console.log("loadPdfJs: PDF.js library and worker initialized successfully.");
       return lib;
   }).catch(err => {
-      console.error("Failed to load PDF.js and its worker via Vite.", err);
-      // Fallback: try to just load the library without the specific worker port config
+      console.error("loadPdfJs: Failed to load PDF.js and its worker via Vite.", err);
       return import('pdfjs-dist').then(lib => {
+          // console.log("loadPdfJs: Fallback - successfully imported PDF.js library without worker.");
           pdfjsLib = lib;
           isLoading = false;
           return lib;
+      }).catch(fallbackErr => {
+          console.error("loadPdfJs: Fallback - failed to load PDF.js library.", fallbackErr);
+          isLoading = false;
+          loadPromise = null;
+          return null;
       });
   });
 
@@ -53,27 +67,34 @@ async function loadPdfJs(): Promise<any> {
  * Extracts text from a PDF file
  */
 export async function extractTextFromPdf(file: File): Promise<string> {
-    if (typeof window === 'undefined') return ""; // Guard for SSR
+    if (typeof window === 'undefined') return "";
 
     try {
+        // console.log("extractTextFromPdf: Attempting to load PDF.js...");
         const lib = await loadPdfJs();
-        if (!lib) return "";
+        if (!lib) {
+          console.error("extractTextFromPdf: PDF.js library is null.");
+          return "";
+        }
+        // console.log("extractTextFromPdf: PDF.js loaded, proceeding with text extraction.");
 
         const arrayBuffer = await file.arrayBuffer();
         
         const loadingTask = lib.getDocument({ 
             data: arrayBuffer,
-            // We can omit standardFontDataUrl if the browser has standard fonts or we aren't rendering to canvas yet
         });
         
         const pdf = await loadingTask.promise;
+        // console.log(`extractTextFromPdf: PDF loaded with ${pdf.numPages} pages.`);
         let fullText = '';
         
         for (let i = 1; i <= pdf.numPages; i++) {
             const page = await pdf.getPage(i);
             const textContent = await page.getTextContent();
             
-            // Extract the strings and join them
+            // *** ADDED DETAILED LOGGING HERE ***
+            console.log(`Page ${i} textContent:`, textContent);
+            
             const pageText = textContent.items
                 .map((item: any) => item.str)
                 .join(' ');
@@ -81,6 +102,7 @@ export async function extractTextFromPdf(file: File): Promise<string> {
             fullText += pageText + '\n\n';
         }
         
+        // console.log("extractTextFromPdf: Text extraction successful.");
         return fullText.trim();
     } catch (error) {
         console.error('Error extracting text from PDF:', error);
@@ -104,10 +126,8 @@ export async function convertPdfToImage(
 
     const arrayBuffer = await file.arrayBuffer();
     
-    // Use standardFontDataUrl to ensure fonts load correctly
     const loadingTask = lib.getDocument({ 
         data: arrayBuffer,
-        // When rendering an image, we sometimes need the standard fonts
         standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${lib.version}/standard_fonts/`
     });
     
@@ -132,7 +152,6 @@ export async function convertPdfToImage(
       canvas.toBlob(
         (blob) => {
           if (blob) {
-            // Create a File from the blob with the same name as the pdf
             const originalName = file.name.replace(/\.pdf$/i, "");
             const imageFile = new File([blob], `${originalName}.png`, {
               type: "image/png",
@@ -152,7 +171,7 @@ export async function convertPdfToImage(
         },
         "image/png",
         1.0
-      ); // Set quality to maximum (1.0)
+      );
     });
   } catch (err) {
     return {

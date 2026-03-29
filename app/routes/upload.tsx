@@ -10,14 +10,16 @@ import { extractTextFromPdf } from "~/lib/pdfUtils";
 import ClearTextButton from "~/components/ClearTextButton";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Initialize Gemini (ensure VITE_GEMINI_API_KEY is set in .env.local)
-// WARNING: Exposing API keys directly in client-side code is not recommended for production.
-// For production, consider using a backend proxy.
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY as string);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // Changed model to "gemini-1.5-flash"
+// *** ADDED LOGGING FOR API KEY ***
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY as string;
+console.log("Checking Gemini API Key:", apiKey ? "Loaded" : "MISSING or empty");
+
+// Initialize Gemini
+const genAI = new GoogleGenerativeAI(apiKey);
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 const Upload = () => {
-    const { auth, isLoading, fs, kv} = usePuterStore(); // Removed 'ai' from here
+    const { auth, isLoading, fs, kv} = usePuterStore();
     const navigate = useNavigate();
 
     // Basic state for our form
@@ -27,7 +29,7 @@ const Upload = () => {
     const [companyName, setCompanyName] = useState("");
     const [jobDescription, setJobDescription] = useState("");
     const [file, setFile] = useState<File | null>(null);
-    const [extractedText, setExtractedText] = useState<string | null>(null); // State to hold extracted text
+    const [extractedText, setExtractedText] = useState<string | null>(null);
 
     // Watch for unauthenticated state and redirect to home
     useEffect(() => {
@@ -66,7 +68,7 @@ const Upload = () => {
         setJobTitle("");
         setCompanyName("");
         setJobDescription("");
-        setFile(null); // Also clear the selected file
+        setFile(null);
     };
 
     const handleAnalyze = useCallback(async () => {
@@ -112,25 +114,22 @@ const Upload = () => {
                 resumePath: uploadedFile.path,
                 imagePath: uploadedImage.path,
                 companyName, jobTitle, jobDescription,
-                extractedText, // Include extracted text
+                extractedText,
                 feedback: ' ',
             };
             
-            // Save initial data to KV
             await kv.set(`resume:${uuid}`, JSON.stringify(data));
 
             setStatusText('Analyzing with Gemini...');
             const systemPrompt = prepareInstructions({ jobTitle, jobDescription, AIResponseFormat });
             
-            // --- Gemini Integration Start ---
             const fullPrompt = `${systemPrompt}\n\nResume Content:\n${extractedText}`;
             const result = await model.generateContent(fullPrompt);
             const response = await result.response;
-            const geminiFeedbackText = response.text(); // Gemini's response is directly accessible via .text()
+            const geminiFeedbackText = response.text();
 
             console.log('Gemini raw response:', geminiFeedbackText);
 
-            // Attempt to parse JSON, handle potential markdown wrapping
             let parsedFeedback;
             try {
                 const jsonMatch = geminiFeedbackText.match(/\{[\s\S]*\}/);
@@ -145,13 +144,12 @@ const Upload = () => {
                 setIsProcessing(false);
                 return;
             }
-            // --- Gemini Integration End ---
 
             data.feedback = parsedFeedback;
-            await kv.set(`resume:${uuid}`, JSON.stringify(data)); // Update with feedback
+            await kv.set(`resume:${uuid}`, JSON.stringify(data));
             
             setStatusText('Analysis Complete, Redirecting...');
-            console.log("Final Data with UUID:", data); // Log the final data with UUID
+            console.log("Final Data with UUID:", data);
             
             setTimeout(() => {
                 navigate(`/resume/${uuid}`);
@@ -204,7 +202,6 @@ const Upload = () => {
                                         isVisible={hasData} 
                                     />
 
-                                    {/* 1. Job Title Div */}
                                     <div className="form-div flex flex-col text-left w-full">
                                         <label htmlFor="job-title" className="text-gray-700 font-semibold mb-2 ml-1 text-sm text-center">
                                             Target Job Title
@@ -221,7 +218,6 @@ const Upload = () => {
                                         />
                                     </div>
 
-                                    {/* 2. Company Name Div */}
                                     <div className="form-div flex flex-col text-left w-full">
                                         <label htmlFor="company-name" className="text-gray-700 font-semibold mb-2 ml-1 text-sm text-center">
                                             Dream Company
@@ -238,7 +234,6 @@ const Upload = () => {
                                         />
                                     </div>
 
-                                    {/* 3. Job Description Div */}
                                     <div className="form-div flex flex-col text-left w-full">
                                         <label htmlFor="job-description" className="text-gray-700 font-semibold mb-2 ml-1 text-sm text-center">
                                             Job Description
@@ -255,12 +250,10 @@ const Upload = () => {
                                         />
                                     </div>
 
-                                    {/* 4. File Uploader Component */}
                                     <div className="form-div flex flex-col text-left w-full">
                                         <label className="text-gray-700 font-semibold mb-2 ml-1 text-sm text-center">
                                             Upload Your Resume
                                         </label>
-                                        {/* Pass the currently selected file down to Fileuploader so it can show it */}
                                         <Fileuploader 
                                             onFileSelect={handleFileSelect} 
                                             currentFile={file} 
