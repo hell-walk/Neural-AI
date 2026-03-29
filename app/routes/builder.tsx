@@ -11,7 +11,7 @@ import { exportToWord } from '~/lib/wordExport'; // Import the Word export utili
 // Import Gemini SDK
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Initialize Gemini (ensure VITE_GEMINI_API_KEY is set in .env.local)
+// Initialize Gemini (ensure VITE_GEMINI_API_KEY is set in .env.example)
 // WARNING: Exposing API keys directly in client-side code is not recommended for production.
 // For production, consider using a backend proxy.
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY as string);
