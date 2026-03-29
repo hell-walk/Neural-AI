@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from "react-router";
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from "react-router";
 import ClearTextButton from "~/components/ClearTextButton";
 import { usePuterStore } from "~/lib/puter";
 import { generateUUID } from "~/lib/utility";
@@ -15,18 +15,20 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 // WARNING: Exposing API keys directly in client-side code is not recommended for production.
 // For production, consider using a backend proxy.
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY as string);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // Changed model to "gemini-1.5-flash"
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" }); // Changed model to "gemini-2.5-flash"
 
 const Builder = () => {
     const navigate = useNavigate();
+    const routeLocation = useLocation();
     const { kv } = usePuterStore(); // Removed 'ai' from here
     const [isProcessing, setIsProcessing] = useState(false);
-    
+    const [resumeId, setResumeId] = useState<string | null>(null);
+
     // Form States
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
-    const [location, setLocation] = useState(''); // Added location
+    const [userLocation, setUserLocation] = useState(''); // Renamed from location
     const [linkedin, setLinkedin] = useState(''); // Added linkedin
     const [github, setGithub] = useState(''); // Added github
     const [hasExperience, setHasExperience] = useState<boolean | null>(null); // Added experience toggle
@@ -38,18 +40,50 @@ const Builder = () => {
     const [certification, setCertification] = useState('');
     const [extracurricularActivities, setExtracurricularActivities] = useState('');
     const [description, setDescription] = useState('');
-    
+
     // Template State
     const [selectedTemplate, setSelectedTemplate] = useState<"template1" | "template2" | "template3">("template1");
-    
+
     // Result State
     const [generatedResumeData, setGeneratedResumeData] = useState<any>(null);
+
+    useEffect(() => {
+        const params = new URLSearchParams(routeLocation.search);
+        const id = params.get('id');
+        if (id) {
+            setResumeId(id);
+            const loadResumeData = async () => {
+                const resumeData = await kv.get(`builder:${id}`);
+                if (resumeData) {
+                    const parsedData = JSON.parse(resumeData);
+                    setName(parsedData.personalInfo?.name || '');
+                    setEmail(parsedData.personalInfo?.email || '');
+                    setPhoneNumber(parsedData.personalInfo?.phone || '');
+                    setUserLocation(parsedData.personalInfo?.location || '');
+                    setLinkedin(parsedData.personalInfo?.linkedin || '');
+                    setGithub(parsedData.personalInfo?.github || '');
+                    setHasExperience(parsedData.experience?.length > 0);
+                    setSkills(parsedData.skills?.hardSkills?.join(', ') || '');
+                    setSoftSkills(parsedData.skills?.softSkills?.join(', ') || '');
+                    setExperience(parsedData.experience?.map((exp: any) => `${exp.company}, ${exp.role}, ${exp.duration}\n${exp.responsibilities.join('\n')}`).join('\n\n') || '');
+                    setProject(parsedData.projects?.map((proj: any) => `${proj.name}: ${proj.description}`).join('\n\n') || '');
+                    setEducation(parsedData.education?.map((edu: any) => `${edu.degree}, ${edu.institution}, ${edu.duration}`).join('\n') || '');
+                    setCertification(parsedData.certifications?.join(', ') || '');
+                    setExtracurricularActivities(parsedData.extracurricular?.join('\n') || '');
+                    setDescription(parsedData.personalInfo?.summary || '');
+                    setSelectedTemplate(parsedData.template || 'template1');
+                    setGeneratedResumeData(parsedData);
+                }
+            };
+            loadResumeData();
+        }
+    }, [routeLocation.search, kv]);
 
     const handleClearText = () => {
         setName("");
         setEmail("");
         setPhoneNumber("");
-        setLocation("");
+        setUserLocation("");
         setLinkedin("");
         setGithub("");
         setHasExperience(null);
@@ -67,28 +101,28 @@ const Builder = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsProcessing(true);
-        setGeneratedResumeData(null); 
-        
+        setGeneratedResumeData(null);
+
         try {
-            const uuid = generateUUID();
-            
+            const uuid = resumeId || generateUUID();
+
             const userInput = {
-                name, 
-                email, 
-                phoneNumber, 
-                location,
+                name,
+                email,
+                phoneNumber,
+                location: userLocation,
                 linkedin,
                 github,
                 hasExperience,
-                skills: skills.split(',').map(s => s.trim()).filter(Boolean), 
+                skills: skills.split(',').map(s => s.trim()).filter(Boolean),
                 softSkills: softSkills.split(',').map(s => s.trim()).filter(Boolean),
-                experience: hasExperience ? experience.split('\n').filter(Boolean) : [], 
-                projects: project.split('\n').filter(Boolean), 
-                education: education.split('\n').filter(Boolean), 
-                certifications: certification.split(',').map(c => c.trim()).filter(Boolean), 
-                extracurricularActivities: extracurricularActivities.split('\n').filter(Boolean), 
+                experience: hasExperience ? experience.split('\n').filter(Boolean) : [],
+                projects: project.split('\n').filter(Boolean),
+                education: education.split('\n').filter(Boolean),
+                certifications: certification.split(',').map(c => c.trim()).filter(Boolean),
+                extracurricularActivities: extracurricularActivities.split('\n').filter(Boolean),
                 description,
-                selectedTemplate 
+                selectedTemplate
             };
 
             const systemPrompt = prepareResumeGenerationInstructions(userInput);
@@ -125,7 +159,7 @@ const Builder = () => {
             console.log("Submitting builder data:", finalData);
 
             await kv.set(`builder:${uuid}`, JSON.stringify(finalData));
-            
+
             setGeneratedResumeData(finalData);
 
             setTimeout(() => {
@@ -147,8 +181,8 @@ const Builder = () => {
         }
     };
 
-    const hasData = name.trim() !== "" || 
-                    email.trim() !== "" || 
+    const hasData = name.trim() !== "" ||
+                    email.trim() !== "" ||
                     phoneNumber.trim() !== "";
 
     return (
@@ -159,12 +193,12 @@ const Builder = () => {
                         <img src="/public/icons/back.svg" alt="Back" className="w-2.5 h-2.5" />
                         <span className="text-gray-800 text-sm font-semibold hidden md:inline-block">Back To Homepage</span>
                     </Link>
-                    
+
                     {/* Export Buttons (only visible when resume is generated) */}
                     {generatedResumeData && (
                         <div className="hidden lg:flex border-l border-gray-200 pl-4 ml-2 gap-2">
                              <ExportButton filename={generatedResumeData.personalInfo?.name || "My_Resume"} />
-                             <button 
+                             <button
                                 onClick={handleExportWord}
                                 className="bg-blue-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-blue-700 font-medium text-sm transition-colors flex items-center gap-2"
                              >
@@ -173,24 +207,24 @@ const Builder = () => {
                         </div>
                     )}
                 </div>
-                
+
                 {/* Template Selection Toggle */}
                 <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-lg">
-                    <button 
+                    <button
                         type="button"
                         onClick={() => setSelectedTemplate('template1')}
                         className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${selectedTemplate === 'template1' ? 'bg-white shadow-sm text-purple-600' : 'text-gray-600 hover:text-gray-900'}`}
                     >
                         Classic
                     </button>
-                    <button 
+                    <button
                         type="button"
                         onClick={() => setSelectedTemplate('template2')}
                         className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${selectedTemplate === 'template2' ? 'bg-white shadow-sm text-purple-600' : 'text-gray-600 hover:text-gray-900'}`}
                     >
                         Sidebar
                     </button>
-                    <button 
+                    <button
                         type="button"
                         onClick={() => setSelectedTemplate('template3')}
                         className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${selectedTemplate === 'template3' ? 'bg-white shadow-sm text-purple-600' : 'text-gray-600 hover:text-gray-900'}`}
@@ -211,7 +245,7 @@ const Builder = () => {
                     {generatedResumeData && (
                         <div className="absolute bottom-4 right-4 z-10 lg:hidden flex flex-col gap-2">
                             <ExportButton filename={generatedResumeData.personalInfo?.name || "My_Resume"} />
-                            <button 
+                            <button
                                 onClick={handleExportWord}
                                 className="bg-blue-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-blue-700 font-medium text-sm transition-colors flex items-center gap-2 justify-center"
                              >
@@ -219,16 +253,16 @@ const Builder = () => {
                              </button>
                         </div>
                     )}
-                    
+
                     {isProcessing ? (
                         <div className="flex flex-col items-center gap-4">
                             <img src="/public/images/resume-scan.gif" alt="Loading" className="max-w-xs" />
                             <p className="text-purple-600 font-medium animate-pulse">Generating your professional layout...</p>
                         </div>
                     ) : generatedResumeData ? (
-                        <LivePreview 
-                            templateId={selectedTemplate} 
-                            resumeData={generatedResumeData} 
+                        <LivePreview
+                            templateId={selectedTemplate}
+                            resumeData={generatedResumeData}
                         />
                     ) : (
                         <div className="flex flex-col items-center gap-4 text-gray-400">
@@ -250,7 +284,7 @@ const Builder = () => {
                         </div>
 
                         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-                            
+
                             {/* --- PERSONAL INFO --- */}
                             <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
                                 <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Personal Information</h3>
@@ -269,7 +303,7 @@ const Builder = () => {
                                     </div>
                                     <div className="form-div flex flex-col">
                                         <label htmlFor="location" className="text-gray-700 font-semibold mb-2 text-sm">Location</label>
-                                        <input type="text" id="location" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="City, State" className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-white" />
+                                        <input type="text" id="location" value={userLocation} onChange={(e) => setUserLocation(e.target.value)} placeholder="City, State" className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-white" />
                                     </div>
                                 </div>
                             </div>
@@ -293,14 +327,14 @@ const Builder = () => {
                             <div className="bg-purple-50 p-6 rounded-xl border border-purple-100">
                                 <h3 className="text-lg font-bold text-purple-900 mb-4 border-b border-purple-200 pb-2">Professional Experience</h3>
                                 <div className="flex gap-4 mb-4">
-                                    <button 
+                                    <button
                                         type="button"
                                         onClick={() => setHasExperience(true)}
                                         className={`flex-1 py-3 rounded-lg font-semibold transition-all ${hasExperience === true ? 'bg-purple-600 text-white shadow-md' : 'bg-white text-purple-600 border border-purple-200 hover:bg-purple-100'}`}
                                     >
                                         I have experience
                                     </button>
-                                    <button 
+                                    <button
                                         type="button"
                                         onClick={() => {
                                             setHasExperience(false);
@@ -344,7 +378,7 @@ const Builder = () => {
                             {/* --- OTHER DETAILS --- */}
                             <div className="bg-gray-50 p-6 rounded-xl border border-gray-100 space-y-6">
                                 <h3 className="text-lg font-bold text-gray-800 border-b pb-2">Additional Details</h3>
-                                
+
                                 <div className="form-div flex flex-col">
                                     <label htmlFor="project" className="text-gray-700 font-semibold mb-2 text-sm">Projects</label>
                                     <textarea id="project" value={project} onChange={(e) => setProject(e.target.value)} rows={3} placeholder="Project Name: Description of what you built and technologies used." className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-white resize-none" />
@@ -371,7 +405,7 @@ const Builder = () => {
                                 disabled={isProcessing}
                                 className={`bg-linear-to-r from-[#7b7fdb] to-[#9b8fe8] hover:brightness-110 active:brightness-95 text-white font-bold py-4 px-8 rounded-full transition-all duration-200 shadow-md mt-6 w-full max-w-sm mx-auto text-lg ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                             >
-                                {isProcessing ? 'Generating...' : 'Generate Resume'}
+                                {isProcessing ? 'Updating...' : (resumeId ? 'Update Resume' : 'Generate Resume')}
                             </button>
                         </form>
                     </div>
