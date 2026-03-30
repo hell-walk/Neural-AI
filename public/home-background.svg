@@ -1,0 +1,176 @@
+<svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="100%"
+        height="100%"
+        viewBox="0 0 1440 900"
+        preserveAspectRatio="xMidYMid slice"
+>
+    <defs>
+
+        <!-- =====================================================
+             BASE BACKGROUND
+             Pure black canvas — matches the page bg
+        ===================================================== -->
+
+        <!-- =====================================================
+             DOME GLOW GRADIENT
+             Radial gradient centered horizontally at 50%
+             Vertically anchored at the slit line (~58% from top)
+             Colors exactly from the reference image:
+               Center:  #c090ff (bright lavender)
+               Mid:     #6020b8 (medium purple)
+               Outer:   #3a0878 (deep purple)
+               Edge:    #000000 (pure black)
+             The ellipse is WIDE (rx=680) and TALL upward (ry=400)
+             to match the half-dome arch shape
+        ===================================================== -->
+        <radialGradient id="dome-glow" cx="50%" cy="100%" r="100%" gradientUnits="objectBoundingBox">
+            <stop offset="0%"   stop-color="#c8a0ff" stop-opacity="1.0"/>
+            <stop offset="18%"  stop-color="#8840d8" stop-opacity="0.95"/>
+            <stop offset="40%"  stop-color="#6020b8" stop-opacity="0.85"/>
+            <stop offset="65%"  stop-color="#3a0878" stop-opacity="0.70"/>
+            <stop offset="85%"  stop-color="#1a0035" stop-opacity="0.40"/>
+            <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+        </radialGradient>
+
+        <!-- =====================================================
+             SLIT LINE GRADIENT
+             Horizontal linear gradient — bright white-pink center
+             fading to deep violet at edges then transparent
+             Colors from reference:
+               Center:     #f0d8ff (near white-pink)
+               Inner:      #e8c8ff
+               Mid:        #c89fff → #a870ff
+               Outer:      #7040c0
+               Edges:      transparent
+        ===================================================== -->
+        <linearGradient id="slit-line" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stop-color="#000000"  stop-opacity="0"/>
+            <stop offset="8%"   stop-color="#7040c0"  stop-opacity="0.6"/>
+            <stop offset="20%"  stop-color="#a870ff"  stop-opacity="0.9"/>
+            <stop offset="35%"  stop-color="#c89fff"  stop-opacity="1.0"/>
+            <stop offset="50%"  stop-color="#f0d8ff"  stop-opacity="1.0"/>
+            <stop offset="65%"  stop-color="#c89fff"  stop-opacity="1.0"/>
+            <stop offset="80%"  stop-color="#a870ff"  stop-opacity="0.9"/>
+            <stop offset="92%"  stop-color="#7040c0"  stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#000000"  stop-opacity="0"/>
+        </linearGradient>
+
+        <!-- =====================================================
+             SLIT BLOOM — soft glow just above and below the line
+             Makes the line feel like it emits light
+        ===================================================== -->
+        <radialGradient id="slit-bloom" cx="50%" cy="50%" r="50%" gradientUnits="objectBoundingBox">
+            <stop offset="0%"   stop-color="#d8b0ff" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#d8b0ff" stop-opacity="0"/>
+        </radialGradient>
+
+        <!-- =====================================================
+             SOFT BLUR FILTER
+             Applied to the slit bloom for a soft light bleed
+        ===================================================== -->
+        <filter id="bloom-blur" x="-100%" y="-500%" width="300%" height="1100%">
+            <feGaussianBlur stdDeviation="6 18"/>
+        </filter>
+
+        <!-- =====================================================
+             CORNER DARKENER
+             Vignette to keep all 4 corners pure black
+             so the dome effect looks isolated at center
+        ===================================================== -->
+        <radialGradient id="vignette" cx="50%" cy="50%" r="70%" gradientUnits="objectBoundingBox">
+            <stop offset="0%"   stop-color="#000000" stop-opacity="0"/>
+            <stop offset="100%" stop-color="#000000" stop-opacity="0.92"/>
+        </radialGradient>
+
+    </defs>
+
+    <!-- =====================================================
+         LAYER 1: Pure black base
+    ===================================================== -->
+    <rect x="0" y="0" width="1440" height="900" fill="#000000"/>
+
+    <!-- =====================================================
+         LAYER 2: The dome glow
+         Wide half-ellipse rising upward from the slit line
+         cx=720 = horizontal center of page (between the 2 blue lines)
+         cy=522 = where the slit line sits (~58% of 900px)
+         rx=680 = dome spans 85% of width (matches reference)
+         ry=400 = dome rises 400px above the slit line
+
+         The dome is rendered as an ellipse whose BOTTOM
+         is at the slit line, and it rises upward.
+         To anchor the bottom at cy=522, we set the ellipse
+         center at cy = 522 - 400 = 122, then ry=400
+         so the bottom edge touches exactly y=522
+    ===================================================== -->
+    <ellipse
+            cx="720"
+            cy="122"
+            rx="680"
+            ry="400"
+            fill="url(#dome-glow)"
+    />
+
+    <!-- =====================================================
+         LAYER 3: Slit line bloom (soft glow around the line)
+         Tall thin rectangle centered on slit y=522
+         Blurred to create a light-bleed halo effect
+    ===================================================== -->
+    <rect
+            x="180" y="510"
+            width="1080" height="24"
+            fill="url(#slit-bloom)"
+            filter="url(#bloom-blur)"
+    />
+
+    <!-- =====================================================
+         LAYER 4: The sharp slit line itself
+         Razor-thin bright line at y=522
+         x starts at 180 (left blue line ~20% of 900)
+         x ends at 1260 (right blue line ~80% of 1440)
+         Height: 2.5px — thin but visible
+    ===================================================== -->
+    <rect
+            x="180" y="520"
+            width="1080" height="2.5"
+            rx="1.25"
+            fill="url(#slit-line)"
+    />
+
+    <!-- =====================================================
+         LAYER 5: Below-slit darkness
+         Covers everything below the slit with near-black
+         so the lower half (subtitle + boxes) is dark
+         Gradient: dark-purple at top → pure black at bottom
+    ===================================================== -->
+    <rect x="0" y="522" width="1440" height="378" fill="#000000" opacity="0.82"/>
+
+    <!-- =====================================================
+         LAYER 6: Corner vignette
+         Keeps all 4 corners black, reinforces the isolated
+         dome-at-center look from the reference image
+    ===================================================== -->
+    <rect
+            x="0" y="0"
+            width="1440" height="900"
+            fill="url(#vignette)"
+    />
+
+    <!-- =====================================================
+         LAYER 7: Top black fade
+         Smooth gradient from black at top → transparent
+         So the navbar area stays pure black
+         Covers top 10% (90px)
+    ===================================================== -->
+    <rect x="0" y="0" width="1440" height="90"
+          fill="url(#top-fade)"
+    />
+    <defs>
+        <linearGradient id="top-fade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#000000" stop-opacity="1"/>
+            <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+        </linearGradient>
+    </defs>
+
+</svg>

@@ -1,0 +1,82 @@
+.btn-wrap {
+    position: relative;
+    border-radius: 999px;
+    padding: 2px;                      /* 2px = border thickness               */
+    overflow: hidden;
+}
+
+/* The spinning silver conic gradient — rotates to create shimmer */
+.btn-wrap::before {
+    content: '';
+    position: absolute;
+    inset: -50%;                       /* oversized so corners don't show gaps */
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+            from 0deg,
+            #444  0%,
+            #bbb 15%,
+            #fff 25%,
+            #e8e8e8 35%,
+            #999 50%,
+            #ddd 65%,
+            #fff 75%,
+            #aaa 85%,
+            #444 100%
+    );
+    animation: spinBorder 2.5s linear infinite;
+    z-index: 0;
+}
+
+/* Stagger the shimmer so buttons don't spin in sync */
+.btn-wrap:nth-child(2)::before { animation-delay: -0.83s; }
+.btn-wrap:nth-child(3)::before { animation-delay: -1.66s; }
+
+/* Solid mask — hides the conic EXCEPT the 2px border edge
+   MUST match body background color exactly: #050508          */
+.btn-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border-radius: 999px;
+    background: #050508;               /* ← matches --bg, keeps button interior dark */
+    z-index: 1;
+}
+
+/* The actual clickable button */
+.btn {
+    position: relative;
+    z-index: 2;                        /* above ::before and ::after           */
+    padding: 8px 20px;
+    border: none;
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.85);
+    transition: background 0.2s, color 0.15s, transform 0.15s;
+}
+.btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+}
+.btn:active {
+    transform: scale(0.96);
+}
+
+/* Log Out variant — red tint */
+.btn-danger {
+    color: rgba(255, 100, 100, 0.80);
+}
+.btn-danger:hover {
+    color: #ff6b6b;
+}
+
+@keyframes spinBorder {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
