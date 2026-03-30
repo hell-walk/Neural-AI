@@ -84,7 +84,10 @@ export default function Home() {
   /* ── Handlers ── */
   const handleResumeBuilder = () => navigate("/builder");
   const handleUploadResume  = () => navigate("/upload");
-  const handleLogOut        = () => navigate("/auth");
+  const handleLogOut = async () => {
+    await auth.signOut();
+    navigate("/auth");
+  };
   const handleAnalyseNav = (id: string) => navigate(`/resume/${id}`);
   const handleBuildNav = (id: string) => navigate(`/builder?id=${id}`);
 
@@ -129,7 +132,7 @@ export default function Home() {
         <div className="hero">
 
           <h1>
-            Track Your<br />
+            Track And Build Your<br />
             <span className="highlight">Resume</span>
           </h1>
           <p>

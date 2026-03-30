@@ -120,7 +120,7 @@ const Upload = () => {
             
             await kv.set(`resume:${uuid}`, JSON.stringify(data));
 
-            setStatusText('Analyzing with Gemini...');
+            setStatusText('Analyzing...');
             const systemPrompt = prepareInstructions({ jobTitle, jobDescription, AIResponseFormat });
             
             const fullPrompt = `${systemPrompt}\n\nResume Content:\n${extractedText}`;
