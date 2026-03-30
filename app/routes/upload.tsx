@@ -176,21 +176,21 @@ const Upload = () => {
     const hasData = jobTitle.trim() !== "" || companyName.trim() !== "" || jobDescription.trim() !== "" || file !== null;
 
     return (
-        <main className="bg-[url('/public/images/bg-main.svg')] bg-cover min-h-screen flex flex-col">
+        <main className="bg-cover min-h-screen flex flex-col" style={{ backgroundImage: "url('/public/images/background.svg')" }}>
             <Navbar />
 
             <section className="main-section grow flex flex-col justify-center items-center px-4 py-12">
                  <div className="page-heading text-center w-full max-w-3xl flex flex-col items-center relative">
                      
-                     <h1 className="text-4xl md:text-5xl font-bold mb-4">Smart Feedback For Your Dream Job</h1>
+                     <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: 'whitesmoke' }}>Smart Feedback For Your Dream Job</h1>
                      
                      {isProcessing ? (
                          <>
-                             <h2 className="text-xl md:text-2xl text-gray-600 mb-8">{statusText}</h2>
+                             <h2 className="text-xl md:text-2xl mb-8" style={{ color: 'whitesmoke' }}>{statusText}</h2>
                              <img src="/public/images/resume-scan.gif" alt="Scanning animation" className="w-full max-w-md mx-auto"/>
                          </>
                      ) : (
-                         <h2 className="text-xl md:text-2xl text-gray-600 mb-8">Drop Your Resume Ats Score And Improvement Tips </h2>
+                         <h2 className="text-xl md:text-2xl mb-8" style={{ color: 'whitesmoke' }}>Drop Your Resume Ats Score And Improvement Tips </h2>
                      )}
 
                      {!isProcessing && (
@@ -202,8 +202,8 @@ const Upload = () => {
                                         isVisible={hasData} 
                                     />
 
-                                    <div className="form-div flex flex-col text-left w-full">
-                                        <label htmlFor="job-title" className="text-gray-700 font-semibold mb-2 ml-1 text-sm text-center">
+                                    <div className="form-div flex flex-col text-left w-full p-4 rounded-lg">
+                                        <label htmlFor="job-title" className="font-bold mb-2 ml-1 text-sm text-center" style={{ color: 'whitesmoke' }}>
                                             Target Job Title
                                         </label>
                                         <input 
@@ -213,13 +213,13 @@ const Upload = () => {
                                             value={jobTitle}
                                             onChange={(e) => setJobTitle(e.target.value)}
                                             placeholder="e.g. Frontend Developer"
-                                            className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-white/80 backdrop-blur-sm text-center"
+                                            className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-purple-500 bg-opacity-50 backdrop-blur-sm text-center"
                                             required
                                         />
                                     </div>
 
-                                    <div className="form-div flex flex-col text-left w-full">
-                                        <label htmlFor="company-name" className="text-gray-700 font-semibold mb-2 ml-1 text-sm text-center">
+                                    <div className="form-div flex flex-col text-left w-full p-4 rounded-lg">
+                                        <label htmlFor="company-name" className="font-bold mb-2 ml-1 text-sm text-center" style={{ color: 'whitesmoke' }}>
                                             Dream Company
                                         </label>
                                         <input 
@@ -229,13 +229,13 @@ const Upload = () => {
                                             value={companyName}
                                             onChange={(e) => setCompanyName(e.target.value)}
                                             placeholder="e.g. Google"
-                                            className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-white/80 backdrop-blur-sm text-center"
+                                            className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-purple-500 bg-opacity-50 backdrop-blur-sm text-center"
                                             required
                                         />
                                     </div>
 
-                                    <div className="form-div flex flex-col text-left w-full">
-                                        <label htmlFor="job-description" className="text-gray-700 font-semibold mb-2 ml-1 text-sm text-center">
+                                    <div className="form-div flex flex-col text-left w-full p-4 rounded-lg">
+                                        <label htmlFor="job-description" className="font-bold mb-2 ml-1 text-sm text-center" style={{ color: 'whitesmoke' }}>
                                             Job Description
                                         </label>
                                         <textarea 
@@ -245,13 +245,13 @@ const Upload = () => {
                                             onChange={(e) => setJobDescription(e.target.value)}
                                             placeholder="Paste the full job description here..."
                                             rows={4}
-                                            className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-white/80 backdrop-blur-sm resize-none text-center"
+                                            className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-purple-500 bg-opacity-50  backdrop-blur-sm resize-none text-center"
                                             required
                                         />
                                     </div>
 
-                                    <div className="form-div flex flex-col text-left w-full">
-                                        <label className="text-gray-700 font-semibold mb-2 ml-1 text-sm text-center">
+                                    <div className="form-div flex flex-col text-left w-full p-4 rounded-lg">
+                                        <label className="font-bold mb-2 ml-1 text-sm text-center" style={{ color: 'whitesmoke' }}>
                                             Upload Your Resume
                                         </label>
                                         <Fileuploader 

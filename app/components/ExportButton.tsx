@@ -48,7 +48,7 @@ export const ExportButton: React.FC<ExportButtonProps> = ({ filename = "My_Resum
         <button 
             onClick={handleExport}
             disabled={isExporting}
-            className="bg-purple-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-purple-700 font-medium text-sm transition-colors flex items-center gap-2 disabled:opacity-50"
+            className="bg-transparent text-white px-4 py-2 rounded-md shadow-sm hover:bg-purple-700 font-medium text-sm transition-colors flex items-center gap-2 disabled:opacity-50"
         >
             {isExporting ? (
                 <span className="animate-pulse">Exporting...</span>

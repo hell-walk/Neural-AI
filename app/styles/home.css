@@ -1,0 +1,594 @@
+/* ============================================================
+   NEURAL-AI HOME PAGE — home.css
+   ------------------------------------------------------------
+   HOW THIS FILE IS ORGANISED:
+   1.  Reset
+   2.  CSS Variables (design tokens)
+   3.  Body
+   4.  Background (uses home-background.svg)
+   5.  Navbar
+   6.  Silver shimmer buttons (same as login page)
+   7.  Main layout wrapper
+   8.  Hero section (heading + subtitle)
+   9.  Boxes section (two side-by-side scrollable divs)
+   10. Box header
+   11. Box scrollable list
+   12. Row item (each result row inside a box)
+   13. Status badges
+   14. Empty state
+   15. Animations
+   ============================================================ */
+
+
+/* ============================================================
+   1. RESET
+   ============================================================ */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* ============================================================
+   2. CSS VARIABLES — design tokens
+   Change these to retheme the whole page
+   ============================================================ */
+:root {
+    --bg:           #050508;                    /* page base background color        */
+    --purple-core:  #9b6fff;                    /* primary purple accent              */
+    --purple-glow:  rgba(155, 111, 255, 0.22);  /* purple with opacity for borders   */
+    --purple-fill:  rgba(155, 111, 255, 0.08);  /* purple with opacity for fills     */
+    --text-primary: #ffffff;                    /* main white text                   */
+    --text-muted:   rgba(255, 255, 255, 0.45);  /* dimmed text for subtitles         */
+    --text-faint:   rgba(255, 255, 255, 0.25);  /* very dim text for meta info       */
+    --font-display: 'Syne', sans-serif;         /* headings and logo font            */
+    --font-body:    'DM Sans', sans-serif;      /* body text and buttons font        */
+}
+
+
+/* ============================================================
+   3. BODY
+   Full viewport, dark base, no horizontal scroll
+   ============================================================ */
+body {
+    min-height: 100vh;
+    background-color: var(--bg);
+    font-family: var(--font-body);
+    color: var(--text-primary);
+    overflow-x: hidden;
+}
+
+
+/* ============================================================
+   4. BACKGROUND
+   Uses home-background.svg — the purple dome light scene.
+
+   STRUCTURE:
+   - .bg-scene         = fixed full-screen container, loads the SVG
+   - .bg-scene::after  = dark gradient overlay:
+                         top solid black (navbar), transparent middle
+                         (hero + light shows through), dark bottom (boxes)
+   - NO ::before needed — SVG handles all the light layers internally
+
+   FILE PLACEMENT (Remix/Vite):
+   Put home-background.svg in your /public folder.
+   Reference it as '/home-background.svg' — the leading slash
+   tells the browser to look from the domain root, not relative path.
+
+   LAYOUT OF THE PAGE (approximate % from top):
+     0%  –  7%  → Navbar (64px, stays solid black)
+     7%  – 20%  → "AI Powered" badge + "Track Your" text
+     20% – 35%  → "Resume" text   ← slit line in SVG targets this zone
+     35% – 50%  → Subtitle paragraph
+     50% – 85%  → Two result boxes (on dark bg)
+     85% – 100% → Bottom black
+   ============================================================ */
+
+/* ── Fixed full-screen background container ── */
+.bg-scene {
+    position: fixed;
+    inset: 0;                          /* top:0 right:0 bottom:0 left:0        */
+    z-index: 0;                        /* behind all content                   */
+    pointer-events: none;              /* never intercepts clicks              */
+
+    background-color: #000000;         /* pure black fallback if SVG fails     */
+
+    /* ← home-background.svg must be in /public folder */
+    background-image: url('/home-background.svg');
+    background-size: cover;            /* fills full viewport                  */
+    background-position: center;       /* centered horizontally and vertically */
+    background-repeat: no-repeat;      /* never tile                           */
+}
+
+/* ── Dark gradient overlay ──
+   Keeps navbar area solid black at the top.
+   Lets the purple dome glow show through in the hero zone.
+   Fades back to near-black behind the result boxes.         */
+.bg-scene::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 1.00)  0%,    /* solid black  — navbar (0–7%)            */
+            rgba(0, 0, 0, 0.50)  7%,    /* semi dark    — just below navbar         */
+            rgba(0, 0, 0, 0.00) 15%,    /* transparent  — dome glow shows here      */
+            rgba(0, 0, 0, 0.00) 38%,    /* transparent  — subtitle area             */
+            rgba(0, 0, 0, 0.60) 52%,    /* darkening    — top of boxes              */
+            rgba(0, 0, 0, 0.85) 70%,    /* dark         — lower boxes area          */
+            rgba(0, 0, 0, 1.00) 100%    /* solid black  — bottom of page            */
+    );
+}
+
+
+/* ============================================================
+   5. NAVBAR
+   Fixed top bar. Always visible while scrolling.
+   Left:  Neural-AI logo ("Neural-" white, "AI" purple)
+   Right: Resume Builder | Upload Resume | Log Out buttons
+   ============================================================ */
+nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;                      /* above bg-scene (0) and main (10)     */
+
+    height: 64px;
+    padding: 0 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background: rgba(5, 5, 8, 0.90);   /* near-black, slightly transparent    */
+    backdrop-filter: blur(14px);        /* frosted glass effect                */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Logo — "Neural-" in white, "AI" in purple */
+.nav-logo {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+}
+.nav-logo span {
+    color: var(--purple-core);         /* the "AI" part                        */
+}
+
+/* Button group wrapper */
+.nav-buttons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+
+/* ============================================================
+   6. SILVER SHIMMER BUTTONS
+   Identical to the login page button style.
+
+   HTML STRUCTURE REQUIRED:
+     <div class="btn-wrap">
+       <button class="btn">Label</button>
+     </div>
+
+   HOW IT WORKS:
+   - .btn-wrap          = outer wrapper, 2px padding = visible border width
+   - .btn-wrap::before  = spinning conic-gradient (the silver shimmer)
+   - .btn-wrap::after   = solid mask same color as --bg, reveals only border
+   - .btn               = transparent button on top (z-index: 2)
+
+   CRITICAL: .btn-wrap::after background MUST match --bg exactly.
+   If you change the page bg color, update this too.
+   ============================================================ */
+
+/* Wrapper that holds the spinning silver border */
+.btn-wrap {
+    position: relative;
+    border-radius: 999px;
+    padding: 2px;                      /* 2px = border thickness               */
+    overflow: hidden;
+}
+
+/* The spinning silver conic gradient — rotates to create shimmer */
+.btn-wrap::before {
+    content: '';
+    position: absolute;
+    inset: -50%;                       /* oversized so corners don't show gaps */
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+            from 0deg,
+            #444  0%,
+            #bbb 15%,
+            #fff 25%,
+            #e8e8e8 35%,
+            #999 50%,
+            #ddd 65%,
+            #fff 75%,
+            #aaa 85%,
+            #444 100%
+    );
+    animation: spinBorder 2.5s linear infinite;
+    z-index: 0;
+}
+
+/* Stagger the shimmer so buttons don't spin in sync */
+.btn-wrap:nth-child(2)::before { animation-delay: -0.83s; }
+.btn-wrap:nth-child(3)::before { animation-delay: -1.66s; }
+
+/* Solid mask — hides the conic EXCEPT the 2px border edge
+   MUST match body background color exactly: #050508          */
+.btn-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border-radius: 999px;
+    background: #050508;               /* ← matches --bg, keeps button interior dark */
+    z-index: 1;
+}
+
+/* The actual clickable button */
+.btn {
+    position: relative;
+    z-index: 2;                        /* above ::before and ::after           */
+    padding: 8px 20px;
+    border: none;
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.85);
+    transition: background 0.2s, color 0.15s, transform 0.15s;
+}
+.btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+}
+.btn:active {
+    transform: scale(0.96);
+}
+
+/* Log Out variant — red tint */
+.btn-danger {
+    color: rgba(255, 100, 100, 0.80);
+}
+.btn-danger:hover {
+    color: #ff6b6b;
+}
+
+
+/* ============================================================
+   7. MAIN LAYOUT WRAPPER
+   Full-height flex column, centres hero + boxes vertically.
+   padding-top: 64px offsets the fixed navbar.
+   ============================================================ */
+main {
+    position: relative;
+    z-index: 10;                       /* above bg-scene (0), below nav (100)  */
+
+    padding-top: 64px;                 /* clears the fixed navbar              */
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;       /* anchor from top, not center          */
+    text-align: center;
+
+    padding-left: 5%;
+    padding-right: 5%;
+    gap: 0;
+}
+
+
+/* ============================================================
+   8. HERO SECTION
+   Contains: AI badge pill, H1 heading, subtitle paragraph.
+   Sits at vertical center — right where the purple slit line is.
+   ============================================================ */
+.hero {
+    margin-top: 60px;                  /* pushes hero into the purple dome glow zone */
+    animation: fadeUp 0.8s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* "AI Powered" badge pill */
+.hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(155, 111, 255, 0.12);
+    border: 1px solid rgba(155, 111, 255, 0.30);
+    border-radius: 999px;
+    padding: 5px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #c4a0ff;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+}
+.hero-tag::before {
+    content: '✦';
+    font-size: 10px;
+}
+
+/* Main heading: "Track Your Resume" */
+.hero h1 {
+    font-family: var(--font-display);
+    font-size: clamp(36px, 5.5vw, 58px);  /* responsive                       */
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    color: var(--text-primary);
+    margin-bottom: 16px;
+}
+
+/* "Resume" — purple gradient text */
+.hero h1 .highlight {
+    background: linear-gradient(135deg, #d4b0ff, #9b6fff, #7040df);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Subtitle */
+.hero p {
+    font-size: 15px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    max-width: 420px;
+    margin: 0 auto;
+}
+
+
+/* ============================================================
+   9. BOXES SECTION
+   Two side-by-side scrollable result boxes.
+   Left:  Resume Analysed (with score column)
+   Right: Resume Built    (no score column)
+   ============================================================ */
+.boxes-section {
+    margin-top: 180px;                 /* pushes boxes down to the marked blue line position */
+    width: 100%;
+    max-width: 920px;
+    animation: fadeUp 0.8s 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Horizontal flex row holding both boxes */
+.boxes-row {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    width: 100%;
+}
+
+/* Each box — equal width, purple gradient bg */
+.box {
+    flex: 1;
+    background: linear-gradient(
+            145deg,
+            rgba(120,  60, 255, 0.28) 0%,
+            rgba(80,   20, 180, 0.35) 40%,
+            rgba(50,   10, 120, 0.45) 100%
+    );
+    border: 1px solid rgba(155, 111, 255, 0.22);
+    border-radius: 20px;
+    overflow: hidden;                  /* clips scrollable content             */
+    position: relative;
+}
+
+/* Glowing top edge line on each box */
+.box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(180, 130, 255, 0.60),
+            transparent
+    );
+}
+
+
+/* ============================================================
+   10. BOX HEADER
+   Icon + title + result count badge
+   ============================================================ */
+.box-header {
+    padding: 20px 22px 14px;
+    border-bottom: 1px solid rgba(155, 111, 255, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Icon square */
+.box-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(155, 111, 255, 0.20);
+    border: 1px solid rgba(155, 111, 255, 0.30);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;       /* anchor from top, not center          */
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+/* Box title e.g. "Resume Analysed" */
+.box-title {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Count pill e.g. "6 results" — pushed right via margin-left: auto */
+.box-count {
+    margin-left: auto;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: rgba(196, 160, 255, 0.60);
+    background: rgba(155, 111, 255, 0.12);
+    border: 1px solid rgba(155, 111, 255, 0.20);
+    padding: 2px 9px;
+    border-radius: 999px;
+}
+
+
+/* ============================================================
+   11. BOX SCROLLABLE LIST
+   overflow-y: auto = vertical scroll when content > max-height
+   max-height: 280px = ~4 rows before scroll activates
+   ============================================================ */
+.box-scroll {
+    overflow-y: auto;
+    max-height: 280px;
+    padding: 10px 0;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(155, 111, 255, 0.30) transparent;
+}
+
+/* WebKit browsers (Chrome, Edge, Safari) */
+.box-scroll::-webkit-scrollbar       { width: 4px; }
+.box-scroll::-webkit-scrollbar-track { background: transparent; }
+.box-scroll::-webkit-scrollbar-thumb {
+    background: rgba(155, 111, 255, 0.30);
+    border-radius: 999px;
+}
+
+
+/* ============================================================
+   12. ROW ITEM
+   Each result row inside a box.
+   Structure: .row-item > .row-avatar + .row-info + .row-score? + .row-badge
+   .row-score is only used in the Resume Analysed box.
+   ============================================================ */
+.row-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 22px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    transition: background 0.15s;
+    cursor: default;
+}
+.row-item:last-child { border-bottom: none; }
+.row-item:hover      { background: rgba(155, 111, 255, 0.07); }
+
+/* Avatar circle with initials */
+.row-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(
+            135deg,
+            rgba(155, 111, 255, 0.35),
+            rgba(80,   30, 180, 0.50)
+    );
+    border: 1px solid rgba(155, 111, 255, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;       /* anchor from top, not center          */
+    font-size: 12px;
+    font-weight: 700;
+    color: #d0b0ff;
+    flex-shrink: 0;
+}
+
+/* Name + date column */
+.row-info {
+    flex: 1;
+    min-width: 0;                      /* enables text-overflow: ellipsis      */
+    text-align: left;
+}
+.row-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.90);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.row-date {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-top: 2px;
+}
+
+/* AI score — Resume Analysed box only */
+.row-score {
+    font-size: 13px;
+    font-weight: 600;
+    color: #c4a0ff;
+    flex-shrink: 0;
+}
+
+
+/* ============================================================
+   13. STATUS BADGES
+   .badge-done    = green  ("Done" / "Complete")
+   .badge-pending = yellow ("Review" / "Draft")
+   ============================================================ */
+.row-badge {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    flex-shrink: 0;
+}
+
+.badge-done {
+    background: rgba(34,  197, 94,  0.12);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.20);
+}
+
+.badge-pending {
+    background: rgba(251, 191, 36,  0.10);
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.20);
+}
+
+
+/* ============================================================
+   14. EMPTY STATE
+   Shown inside a box when the data array is empty
+   ============================================================ */
+.box-empty {
+    padding: 40px 20px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.20);
+    text-align: center;
+}
+
+
+/* ============================================================
+   15. ANIMATIONS
+   fadeUp   — hero and boxes slide up on page load
+   spinBorder — silver shimmer button border rotation
+   ============================================================ */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spinBorder {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}

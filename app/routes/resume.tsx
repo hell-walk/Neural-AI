@@ -4,6 +4,11 @@ import { usePuterStore } from "~/lib/puter";
 import Summary from "~/components/Summary";
 import ATS from "~/components/ATS";
 import Details from "~/components/Details";
+import styles from "../styles/navbar.css?url";
+
+export const links = () => [
+    { rel: "stylesheet", href: styles }
+];
 
 // Define the Feedback interface directly in this file
 export interface FeedbackTip {
@@ -82,17 +87,19 @@ const Resume = () => {
   }, [id, fs, kv]);
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <nav className="resume-nav p-4 bg-white shadow-sm">
-        <Link to="/" className="back-button flex items-center gap-2">
-          <img src="/public/icons/back.svg" alt="Back" className="w-2.5 h-2.5" />
-          <span className="text-gray-800 text-sm font-semibold">Back To Homepage</span>
-        </Link>
+    <main className="min-h-screen bg-cover" style={{ backgroundImage: "url('/public/images/background.svg')" }}>
+      <nav className="resume-nav p-4 bg-transparent shadow-sm">
+        <div className="btn-wrap">
+          <Link to="/" className="btn flex items-center justify-center">
+            <img src="/public/icons/back.svg" alt="Back" className="w-2.5 h-2.5 mr-2" />
+            <span>Back To Homepage</span>
+          </Link>
+        </div>
       </nav>
 
 
       <div className="flex flex-row w-full max-lg:flex-col-reverse p-6 gap-6">
-        <section className="feedback-section bg-[url('/public/images/bg-main.svg')] bg-cover h-[100vh] sticky top-0 items-center justify-center">
+        <section className="feedback-section bg-cover h-[100vh] sticky top-0 items-center justify-center" style={{ backgroundImage: "url('/public/div-background.jpg')" }}>
           {imageUrl && resumeUrl ? (
               <div className="animate-in fade-in duration-1000 gradient-border max-sm:m-0 h-[90%] max-wxl:h-fit w-fit">
                 <a href={resumeUrl} target="_blank" rel="noopener noreferrer">
@@ -109,13 +116,22 @@ const Resume = () => {
               </div>
           )}
         </section>
-        <section className="feedback-section">
-            <h2 className="text-4xl text-black font-bold">Resume Review</h2>
+        <section className="feedback-section" style={{ backgroundImage: "url('/public/div-background.jpg')" }}>
+            <h2 className="text-4xl font-bold" style={{ color: 'whitesmoke' }}>Resume Review</h2>
             {feedback ? (
                 <div className="flex flex-col gap-8 animate-in fade-in duration-1000">
-                  <Summary feedback={feedback}/>
-                  <ATS score = {feedback.ATS.score || 0} suggestions={feedback.ATS.tips || []}/>
-                  <Details feedback={feedback}/>
+                  <div className="bg-transparent p-4 rounded-lg">
+                    <h1 style={{ color: 'whitesmoke' }}>Summary</h1>
+                    <Summary feedback={feedback}/>
+                  </div>
+                  <div className="bg-transparent p-4 rounded-lg">
+                    <h2 style={{ color: 'whitesmoke' }}>ATS</h2>
+                    <ATS score = {feedback.ATS.score || 0} suggestions={feedback.ATS.tips || []}/>
+                  </div>
+                  <div className="bg-yellow-100 bg-opacity-50 p-4 rounded-lg">
+                    <h2 style={{ color: 'whitesmoke' }}>Details</h2>
+                    <Details feedback={feedback}/>
+                  </div>
                 </div>
             ) : (
                 <div className="flex items-center justify-center h-full w-full">

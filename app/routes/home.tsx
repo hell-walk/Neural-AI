@@ -1,74 +1,33 @@
-import type { Route } from "./+types/home";
-import { TypeAnimation } from 'react-type-animation';
-import Navbar from "~/components/navbar";
-import { usePuterStore } from "~/lib/puter";
-import { useNavigate, Link } from "react-router";
+import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
-import { exportToWord } from "~/lib/wordExport";
-import ScoreCircle from "~/components/ScrollCircle";
+import { usePuterStore } from "~/lib/puter";
+import styles from "../styles/home.css?url";
 
-export function meta(_args: Route.MetaArgs) {
-  return [
-    { title: "neural-ai" },
-    { name: "description", content: "Smart ai to make your resume job worthy" },
-  ];
-}
+/* ── Page meta tags ── */
+export const meta = () => ([
+  { title: "Neural-AI | Home" },
+  { name: "description", content: "Track your resume and get AI-powered ratings" }
+]);
 
-const ResumeAnalyzerRow = ({ resume }: { resume: Resume }) => {
-  const navigate = useNavigate();
+/* ── Font + CSS links ── */
+export const links = () => [
+  {
+    rel: "stylesheet",
+    href: "https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&display=swap"
+  },
+  { rel: "stylesheet", href: styles }
+];
 
-  const handleViewScore = () => {
-    navigate(`/resume/${resume.id}`);
-  };
-
-  return (
-    <tr className="group hover:bg-gray-100">
-      <td className="p-4">{resume.companyName} - {resume.jobTitle}</td>
-      <td className="p-4">
-        <div className="flex items-center justify-end gap-4">
-          <ScoreCircle score={resume.feedback.overallScore} />
-          <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-            <button onClick={handleViewScore} className="bg-blue-500 text-white px-4 py-2 rounded">View Score</button>
-          </div>
-        </div>
-      </td>
-    </tr>
-  );
-};
-
-const BuilderResumeRow = ({ resume }: { resume: any }) => {
-  const navigate = useNavigate();
-
-  const handleEdit = () => {
-    navigate(`/builder?id=${resume.id}`);
-  };
-
-  const handleExport = () => {
-    const filename = `${resume.personalInfo?.name?.replace(/\s+/g, '_') || 'Resume'}.doc`;
-    exportToWord(resume, filename);
-  };
-
-  return (
-    <tr className="group hover:bg-gray-100">
-      <td className="p-4">{resume.personalInfo?.name || 'Untitled Resume'}</td>
-      <td className="p-4">
-        <div className="flex items-center justify-end gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button onClick={handleEdit} className="bg-blue-500 text-white px-4 py-2 rounded">Edit</button>
-          <button onClick={handleExport} className="bg-green-500 text-white px-4 py-2 rounded">Export to Word</button>
-        </div>
-      </td>
-    </tr>
-  );
-};
-
+/* ============================================================
+   MAIN COMPONENT
+   ============================================================ */
 export default function Home() {
-  const { auth, kv } = usePuterStore();
   const navigate = useNavigate();
+  const { auth, kv } = usePuterStore();
   const [isDemo, setIsDemo] = useState(false);
-  const [resumes, setResumes] = useState<Resume[]>([]);
-  const [builderResumes, setBuilderResumes] = useState<any[]>([]);
-  const [loadingResumes, setLoadingResumes] = useState(false);
-  const [loadingBuilderResumes, setLoadingBuilderResumes] = useState(false);
+  const [resumesAnalysed, setResumesAnalysed] = useState<any[]>([]);
+  const [resumesBuilt, setResumesBuilt] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -81,117 +40,177 @@ export default function Home() {
   }, [auth.isAuthenticated, navigate]);
 
   useEffect(() => {
-    const loadResumes = async () => {
-      setLoadingResumes(true);
-      const resumes = (await kv.list('resume:*', true)) as KVItem[];
-      const parsedResumes = resumes?.map((resume) => (
-        JSON.parse(resume.value) as Resume
-      ));
-      setResumes(parsedResumes || []);
-      setLoadingResumes(false);
+    const loadData = async () => {
+      setLoading(true);
+
+      // Load resumes analysed
+      const analysedItems = (await kv.list('resume:*', true)) as any[];
+      const parsedAnalysed = (analysedItems || []).map((item: any) => {
+        const resume = JSON.parse(item.value);
+        return {
+          id: resume.id,
+          initials: (resume.companyName?.substring(0, 2) || 'NA').toUpperCase(),
+          name: `${resume.companyName} - ${resume.jobTitle}`,
+          date: "A few days ago", // Placeholder date
+          score: resume.feedback.overallScore,
+          status: "done",
+          label: "Done"
+        };
+      });
+      setResumesAnalysed(parsedAnalysed);
+
+      // Load resumes built
+      const builtItems = (await kv.list('builder:*', true)) as any[];
+      const parsedBuilt = (builtItems || []).map((item: any) => {
+        const resume = JSON.parse(item.value);
+        return {
+          id: resume.id,
+          initials: (resume.personalInfo?.name?.substring(0, 2) || 'NA').toUpperCase(),
+          name: resume.personalInfo?.name || 'Untitled Resume',
+          date: "A few days ago", // Placeholder date
+          status: "done",
+          label: "Complete"
+        };
+      });
+      setResumesBuilt(parsedBuilt);
+
+      setLoading(false);
     };
 
-    const loadBuilderResumes = async () => {
-      setLoadingBuilderResumes(true);
-      const builderResumes = (await kv.list('builder:*', true)) as KVItem[];
-      const parsedBuilderResumes = builderResumes?.map((resume) => (
-        JSON.parse(resume.value)
-      ));
-      setBuilderResumes(parsedBuilderResumes || []);
-      setLoadingBuilderResumes(false);
-    };
-
-    loadResumes();
-    loadBuilderResumes();
+    loadData();
   }, [kv]);
 
+
+  /* ── Handlers ── */
+  const handleResumeBuilder = () => navigate("/builder");
+  const handleUploadResume  = () => navigate("/upload");
+  const handleLogOut        = () => navigate("/auth");
+  const handleAnalyseNav = (id: string) => navigate(`/resume/${id}`);
+  const handleBuildNav = (id: string) => navigate(`/builder?id=${id}`);
+
+
   return (
-    <main className="bg-[url('public/images/bg-main.svg')] bg-cover">
-      <Navbar isDemo={isDemo} />
+    <>
+      {/* ================================================
+          BACKGROUND LAYER
+      ================================================ */}
+      <div className="bg-scene" aria-hidden="true" />
 
-      <section className="main-section relative">
-        {isDemo && (
-          <div className="absolute inset-0 z-10 cursor-not-allowed" title="Please log in to interact with this page" onClick={() => alert("Please log in to use these features.")}></div>
-        )}
+      {/* ================================================
+          NAVBAR
+      ================================================ */}
+      <nav>
+        <div className="nav-logo">
+          Neural-<span>AI</span>
+        </div>
+        <div className="nav-buttons">
+          <div className="btn-wrap">
+            <button className="btn" onClick={handleResumeBuilder}>
+              Resume Builder
+            </button>
+          </div>
+          <div className="btn-wrap">
+            <button className="btn" onClick={handleUploadResume}>
+              Upload Resume
+            </button>
+          </div>
+          <div className="btn-wrap">
+            <button className="btn btn-danger" onClick={handleLogOut}>
+              Log Out
+            </button>
+          </div>
+        </div>
+      </nav>
 
-        <div className="page-heading">
-          <h1>Track Your Application And Get Resume Rating</h1>
-          {!loadingResumes && resumes.length === 0 ? (
-            <h2> No Resume Found.. Upload Your Resume To Get Feedback</h2>
-          ) : (
-            <h2><TypeAnimation
-              sequence={[
-                'Review your submissions and check AI-powered Feedback',
-                500,
-                'Review your submissions and check AI-powered Feedback.',
-                500,
-                'Review your submissions and check AI-powered Feedback..',
-                500,
-                'Review your submissions and check AI-powered Feedback...',
-                2000
-              ]}
-              wrapper="span"
-              speed={50}
-              repeat={Infinity}
-            /></h2>
-          )}
+      {/* ================================================
+          MAIN CONTENT
+      ================================================ */}
+      <main>
+        <div className="hero">
+
+          <h1>
+            Track Your<br />
+            <span className="highlight">Resume</span>
+          </h1>
+          <p>
+            Upload your resume and get instant AI feedback,
+            ratings, and application tracking — all in one place.
+          </p>
         </div>
 
-        {loadingResumes && (
-          <div className="flex flex-col items-center justify-center">
-            <img src="public/public/images/resume-scan-2.gif" className="w-[200px]" />
-          </div>
-        )}
+        <div className="boxes-section">
+          <div className="boxes-row">
 
-        {!loadingResumes && resumes.length > 0 && (
-          <div className="w-full">
-            <table className="min-w-full bg-white rounded-lg shadow">
-              <thead>
-                <tr className="w-full text-left text-gray-500">
-                  <th className="p-4">Details</th>
-                  <th className="p-4 text-right">Score</th>
-                </tr>
-              </thead>
-              <tbody>
-                {resumes.map((resume) => (
-                  <ResumeAnalyzerRow key={resume.id} resume={resume} />
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+            {/* ============================================
+                BOX 1 — RESUME ANALYSED
+            ============================================ */}
+            <div className="box">
+              <div className="box-header">
+                <div className="box-icon">📄</div>
+                <div className="box-title">Resume Analysed</div>
+                <div className="box-count">{resumesAnalysed.length} results</div>
+              </div>
+              <div className="box-scroll">
+                {loading ? (
+                  <div className="box-empty">Loading...</div>
+                ) : resumesAnalysed.length === 0 ? (
+                  <div className="box-empty">
+                    No resumes analysed yet. Upload one to get started.
+                  </div>
+                ) : (
+                  resumesAnalysed.map((item) => (
+                    <div className="row-item" key={item.id} onClick={() => handleAnalyseNav(item.id)} style={{ cursor: 'pointer' }}>
+                      <div className="row-avatar">{item.initials}</div>
+                      <div className="row-info">
+                        <div className="row-name">{item.name}</div>
+                        <div className="row-date">{item.date}</div>
+                      </div>
+                      <div className="row-score">{item.score}/100</div>
+                      <div className={`row-badge badge-${item.status}`}>
+                        {item.label}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
 
-        <div className="page-heading">
-          <h1>Resume Builder</h1>
-          {!loadingBuilderResumes && builderResumes.length === 0 && (
-            <h2>No builder resumes found.</h2>
-          )}
+            {/* ============================================
+                BOX 2 — RESUME BUILT
+            ============================================ */}
+            <div className="box">
+              <div className="box-header">
+                <div className="box-icon">🛠️</div>
+                <div className="box-title">Resume Built</div>
+                <div className="box-count">{resumesBuilt.length} results</div>
+              </div>
+              <div className="box-scroll">
+                {loading ? (
+                  <div className="box-empty">Loading...</div>
+                ) : resumesBuilt.length === 0 ? (
+                  <div className="box-empty">
+                    No resumes built yet. Try the Resume Builder.
+                  </div>
+                ) : (
+                  resumesBuilt.map((item) => (
+                    <div className="row-item" key={item.id} onClick={() => handleBuildNav(item.id)} style={{ cursor: 'pointer' }}>
+                      <div className="row-avatar">{item.initials}</div>
+                      <div className="row-info">
+                        <div className="row-name">{item.name}</div>
+                        <div className="row-date">{item.date}</div>
+                      </div>
+                      <div className={`row-badge badge-${item.status}`}>
+                        {item.label}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+          </div>
         </div>
-
-        {loadingBuilderResumes && (
-          <div className="flex flex-col items-center justify-center">
-            <img src="public/public/images/resume-scan-2.gif" className="w-[200px]" />
-          </div>
-        )}
-
-        {!loadingBuilderResumes && builderResumes.length > 0 && (
-          <div className="w-full">
-            <table className="min-w-full bg-white rounded-lg shadow">
-              <thead>
-                <tr className="w-full text-left text-gray-500">
-                  <th className="p-4">Name</th>
-                  <th className="p-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {builderResumes.map((resume) => (
-                  <BuilderResumeRow key={resume.id} resume={resume} />
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </section>
-    </main>
+      </main>
+    </>
   );
 }

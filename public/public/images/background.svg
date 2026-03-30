@@ -1,0 +1,164 @@
+<svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="100%"
+        height="100%"
+        viewBox="0 0 1440 900"
+        preserveAspectRatio="xMidYMid slice"
+>
+    <defs>
+
+        <!-- =============================================
+             GRID PATTERN
+             Repeating 40x40 grid of faint white lines
+             Matches: background-size: 40px 40px in CSS
+             Opacity 0.04 = rgba(255,255,255,0.04)
+        ============================================= -->
+        <pattern
+                id="grid"
+                width="40"
+                height="40"
+                patternUnits="userSpaceOnUse"
+        >
+            <!-- Horizontal grid line -->
+            <line
+                    x1="0" y1="0"
+                    x2="40" y2="0"
+                    stroke="rgba(255,255,255,0.04)"
+                    stroke-width="1"
+            />
+            <!-- Vertical grid line -->
+            <line
+                    x1="0" y1="0"
+                    x2="0" y2="40"
+                    stroke="rgba(255,255,255,0.04)"
+                    stroke-width="1"
+            />
+        </pattern>
+
+        <!-- =============================================
+             BLOB 1 — Indigo/Blue
+             Top-left corner
+             Color: #4f46e5  Opacity: 0.18  Blur: 80px
+             Size: 400x400px  Position: -100px, -100px
+        ============================================= -->
+        <radialGradient id="blob-1-gradient" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#4f46e5" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#4f46e5" stop-opacity="0"/>
+        </radialGradient>
+
+        <!-- =============================================
+             BLOB 2 — Green
+             Bottom-right corner
+             Color: #22c55e  Opacity: 0.18  Blur: 80px
+             Size: 350x350px  Position: bottom:-80 right:-80
+        ============================================= -->
+        <radialGradient id="blob-2-gradient" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#22c55e" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#22c55e" stop-opacity="0"/>
+        </radialGradient>
+
+        <!-- =============================================
+             BLOB 3 — Purple/Violet
+             Right side, vertically centered
+             Color: #7c6ff7  Opacity: 0.18  Blur: 80px
+             Size: 250x250px  Position: top:50% right:10%
+        ============================================= -->
+        <radialGradient id="blob-3-gradient" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#7c6ff7" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#7c6ff7" stop-opacity="0"/>
+        </radialGradient>
+
+        <!-- =============================================
+             BLUR FILTER
+             Replicates CSS filter: blur(80px) on blobs
+             stdDeviation="40" ≈ 80px CSS blur
+        ============================================= -->
+        <filter id="blob-blur" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="40"/>
+        </filter>
+
+    </defs>
+
+    <!-- =============================================
+         LAYER 1: Base background
+         Dark navy: #0d0f1a — same as CSS body bg
+    ============================================= -->
+    <rect
+            x="0" y="0"
+            width="1440" height="900"
+            fill="#0d0f1a"
+    />
+
+    <!-- =============================================
+         LAYER 2: Grid overlay
+         Faint white 40x40 grid lines across the page
+    ============================================= -->
+    <rect
+            x="0" y="0"
+            width="1440" height="900"
+            fill="url(#grid)"
+    />
+
+    <!-- =============================================
+         LAYER 3: Blob 1 — Indigo (top-left)
+         CSS: top:-100px left:-100px width:400 height:400
+         Center of blob in SVG coords: (100, 100)
+         Radius: 200 (half of 400px)
+    ============================================= -->
+    <ellipse
+            cx="100" cy="100"
+            rx="200" ry="200"
+            fill="url(#blob-1-gradient)"
+            filter="url(#blob-blur)"
+    />
+
+    <!-- =============================================
+         LAYER 4: Blob 2 — Green (bottom-right)
+         CSS: bottom:-80px right:-80px width:350 height:350
+         Center in SVG: (1440-80+175, 900-80+175) = (1535, 995)
+         Clamped to near edge: (1390, 870)
+         Radius: 175 (half of 350px)
+    ============================================= -->
+    <ellipse
+            cx="1390" cy="870"
+            rx="175" ry="175"
+            fill="url(#blob-2-gradient)"
+            filter="url(#blob-blur)"
+    />
+
+    <!-- =============================================
+         LAYER 5: Blob 3 — Purple (right-center)
+         CSS: top:50% right:10% width:250 height:250
+         top:50% of 900 = 450, right:10% of 1440 = 144px from right
+         Center X: 1440 - 144 + 125 = 1421 → use 1320
+         Center Y: 450 + 125 = 575 → use 450
+         Radius: 125 (half of 250px)
+    ============================================= -->
+    <ellipse
+            cx="1300" cy="450"
+            rx="125" ry="125"
+            fill="url(#blob-3-gradient)"
+            filter="url(#blob-blur)"
+    />
+
+    <!-- =============================================
+         LAYER 6: Watermark text "Neural-AI"
+         CSS: bottom:-30px center, font-size ~180px
+         color: rgba(255,255,255,0.03)
+         font-family: Syne, font-weight: 800
+         Positioned at bottom center of SVG
+    ============================================= -->
+    <text
+            x="720"
+            y="920"
+            text-anchor="middle"
+            font-family="Syne, sans-serif"
+            font-size="180"
+            font-weight="800"
+            fill="rgba(255,255,255,0.03)"
+            letter-spacing="-4"
+    >
+        Neural-AI
+    </text>
+
+</svg>

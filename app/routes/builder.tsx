@@ -7,6 +7,11 @@ import { ResumeAIResponseFormat, prepareResumeGenerationInstructions } from '../
 import LivePreview from '~/components/LivePreview';
 import { ExportButton } from '~/components/ExportButton';
 import { exportToWord } from '~/lib/wordExport'; // Import the Word export utility
+import styles from "../styles/navbar.css?url";
+
+export const links = () => [
+    { rel: "stylesheet", href: styles }
+];
 
 // Import Gemini SDK
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -186,58 +191,75 @@ const Builder = () => {
                     phoneNumber.trim() !== "";
 
     return (
-        <main className="min-h-screen bg-gray-50 flex flex-col">
-            <nav className="resume-nav p-4 bg-white shadow-sm relative z-50 flex justify-between items-center flex-wrap gap-4">
+        <main className="min-h-screen bg-cover flex flex-col" style={{ backgroundImage: "url('/public/images/background.svg')" }}>
+            <nav className="resume-nav p-4 bg-transparent shadow-sm relative z-50 flex justify-between items-center flex-wrap gap-4">
                 <div className="flex items-center gap-4">
-                    <Link to="/" className="back-button flex items-center gap-2 w-fit">
-                        <img src="/public/icons/back.svg" alt="Back" className="w-2.5 h-2.5" />
-                        <span className="text-gray-800 text-sm font-semibold hidden md:inline-block">Back To Homepage</span>
-                    </Link>
+                    <div className="btn-wrap">
+                        <Link to="/" className="btn flex items-center justify-center">
+                            <img src="/public/icons/back.svg" alt="Back" className="w-2.5 h-2.5 mr-2" />
+                            <span>Back To Homepage</span>
+                        </Link>
+                    </div>
 
                     {/* Export Buttons (only visible when resume is generated) */}
                     {generatedResumeData && (
                         <div className="hidden lg:flex border-l border-gray-200 pl-4 ml-2 gap-2">
-                             <ExportButton filename={generatedResumeData.personalInfo?.name || "My_Resume"} />
-                             <button
-                                onClick={handleExportWord}
-                                className="bg-blue-600 text-white px-4 py-2 rounded-md shadow-sm hover:bg-blue-700 font-medium text-sm transition-colors flex items-center gap-2"
-                             >
-                                 <span>📄</span> Export Word
-                             </button>
+                             <div className="btn-wrap">
+                                <button
+                                    onClick={() => {}}
+                                    className="btn"
+                                >
+                                    <ExportButton filename={generatedResumeData.personalInfo?.name || "My_Resume"} />
+                                </button>
+                             </div>
+                             <div className="btn-wrap">
+                                <button
+                                    onClick={handleExportWord}
+                                    className="btn flex items-center justify-center"
+                                >
+                                    <span className="mr-2">📄</span> Export Word
+                                </button>
+                             </div>
                         </div>
                     )}
                 </div>
 
                 {/* Template Selection Toggle */}
-                <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-lg">
-                    <button
-                        type="button"
-                        onClick={() => setSelectedTemplate('template1')}
-                        className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${selectedTemplate === 'template1' ? 'bg-white shadow-sm text-purple-600' : 'text-gray-600 hover:text-gray-900'}`}
-                    >
-                        Classic
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setSelectedTemplate('template2')}
-                        className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${selectedTemplate === 'template2' ? 'bg-white shadow-sm text-purple-600' : 'text-gray-600 hover:text-gray-900'}`}
-                    >
-                        Sidebar
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setSelectedTemplate('template3')}
-                        className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${selectedTemplate === 'template3' ? 'bg-white shadow-sm text-purple-600' : 'text-gray-600 hover:text-gray-900'}`}
-                    >
-                        Minimal
-                    </button>
+                <div className="flex items-center gap-2 bg-transparent p-1 rounded-lg">
+                    
+                        <button
+                            type="button"
+                            onClick={() => setSelectedTemplate('template1')}
+                            className={`btn ${selectedTemplate === 'template1' ? 'text-purple-600' : 'text-white'}`}
+                        >
+                            Classic
+                        </button>
+                    
+                   
+                        <button
+                            type="button"
+                            onClick={() => setSelectedTemplate('template2')}
+                            className={`btn ${selectedTemplate === 'template2' ? 'text-purple-600' : 'text-white'}`}
+                        >
+                            Sidebar
+                        </button>
+                    
+                   
+                        <button
+                            type="button"
+                            onClick={() => setSelectedTemplate('template3')}
+                            className={`btn ${selectedTemplate === 'template3' ? 'text-purple-600' : 'text-white'}`}
+                        >
+                            Minimal
+                        </button>
+
                 </div>
             </nav>
 
             <div className="flex flex-row w-full max-lg:flex-col p-6 gap-6 grow">
                 {/* Preview/Side Section */}
-                <section className="preview-section bg-gray-200 lg:sticky lg:top-6 h-[80vh] lg:w-1/2 rounded-2xl flex items-center justify-center overflow-hidden relative shadow-inner">
-                    <div className="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-purple-700 shadow-sm border border-purple-100 uppercase tracking-wide">
+                <section className="preview-section lg:sticky lg:top-6 h-[80vh] lg:w-1/2 rounded-2xl flex items-center justify-center overflow-hidden relative shadow-inner p-4" style={{ backgroundImage: "url('/public/div-background.jpg')" }}>
+                    <div className="absolute top-4 left-4 z-10 bg-transparent backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-purple-700 shadow-sm border border-purple-100 uppercase tracking-wide">
                         {selectedTemplate} Active
                     </div>
 
@@ -273,10 +295,10 @@ const Builder = () => {
                 </section>
 
                 {/* Builder Form Section */}
-                <section className="builder-section lg:w-1/2 bg-white rounded-2xl p-8 shadow-sm overflow-y-auto">
+                <section className="builder-section lg:w-1/2 bg-transparent rounded-2xl p-8 shadow-sm overflow-y-auto" style={{ backgroundImage: "url('/public/div-background.jpg')" }}>
                     <div className="max-w-2xl mx-auto relative">
                         <div className="flex justify-between items-center mb-8">
-                            <h2 className="text-3xl font-bold text-gray-800">Enter Your Details</h2>
+                            <h2 className="text-3xl font-bold" style={{ color: 'whitesmoke' }}>Enter Your Details</h2>
                             <ClearTextButton
                                 onClear={handleClearText}
                                 isVisible={hasData && !isProcessing}
@@ -286,46 +308,42 @@ const Builder = () => {
                         <form onSubmit={handleSubmit} className="flex flex-col gap-6">
 
                             {/* --- PERSONAL INFO --- */}
-                            <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
-                                <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Personal Information</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="form-div flex flex-col">
-                                        <label htmlFor="name" className="text-gray-700 font-semibold mb-2 text-sm">Full Name</label>
-                                        <input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="John Doe" className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-white" required />
-                                    </div>
-                                    <div className="form-div flex flex-col">
-                                        <label htmlFor="email" className="text-gray-700 font-semibold mb-2 text-sm">Email</label>
-                                        <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="john@example.com" className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-white" required />
-                                    </div>
-                                    <div className="form-div flex flex-col">
-                                        <label htmlFor="phone" className="text-gray-700 font-semibold mb-2 text-sm">Phone</label>
-                                        <input type="tel" id="phone" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="(555) 123-4567" className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-white" required />
-                                    </div>
-                                    <div className="form-div flex flex-col">
-                                        <label htmlFor="location" className="text-gray-700 font-semibold mb-2 text-sm">Location</label>
-                                        <input type="text" id="location" value={userLocation} onChange={(e) => setUserLocation(e.target.value)} placeholder="City, State" className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-white" />
-                                    </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <h3 className="col-span-full text-lg font-bold mb-4 border-b pb-2" style={{ color: 'whitesmoke' }}>Personal Information</h3>
+                                <div className="form-div flex flex-col">
+                                    <label htmlFor="name" className="font-bold mb-2 text-sm" style={{ color: 'whitesmoke' }}>Full Name</label>
+                                    <input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="John Doe" className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-purple-500 bg-opacity-50" required />
+                                </div>
+                                <div className="form-div flex flex-col">
+                                    <label htmlFor="email" className="font-bold mb-2 text-sm" style={{ color: 'whitesmoke' }}>Email</label>
+                                    <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="john@example.com" className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-purple-500 bg-opacity-50" required />
+                                </div>
+                                <div className="form-div flex flex-col">
+                                    <label htmlFor="phone" className="font-bold mb-2 text-sm" style={{ color: 'whitesmoke' }}>Phone</label>
+                                    <input type="tel" id="phone" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} placeholder="(555) 123-4567" className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-purple-500 bg-opacity-50" required />
+                                </div>
+                                <div className="form-div flex flex-col">
+                                    <label htmlFor="location" className="font-bold mb-2 text-sm" style={{ color: 'whitesmoke' }}>Location</label>
+                                    <input type="text" id="location" value={userLocation} onChange={(e) => setUserLocation(e.target.value)} placeholder="City, State" className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-purple-500 bg-opacity-50" />
                                 </div>
                             </div>
 
                             {/* --- LINKS --- */}
-                            <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
-                                <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Links</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="form-div flex flex-col">
-                                        <label htmlFor="linkedin" className="text-gray-700 font-semibold mb-2 text-sm">LinkedIn URL</label>
-                                        <input type="url" id="linkedin" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} placeholder="https://linkedin.com/in/..." className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-white" />
-                                    </div>
-                                    <div className="form-div flex flex-col">
-                                        <label htmlFor="github" className="text-gray-700 font-semibold mb-2 text-sm">GitHub / Portfolio URL</label>
-                                        <input type="url" id="github" value={github} onChange={(e) => setGithub(e.target.value)} placeholder="https://github.com/..." className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-white" />
-                                    </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <h3 className="col-span-full text-lg font-bold mb-4 border-b pb-2" style={{ color: 'whitesmoke' }}>Links</h3>
+                                <div className="form-div flex flex-col">
+                                    <label htmlFor="linkedin" className="font-bold mb-2 text-sm" style={{ color: 'whitesmoke' }}>LinkedIn URL</label>
+                                    <input type="url" id="linkedin" value={linkedin} onChange={(e) => setLinkedin(e.target.value)} placeholder="https://linkedin.com/in/..." className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-purple-500 bg-opacity-50" />
+                                </div>
+                                <div className="form-div flex flex-col">
+                                    <label htmlFor="github" className="font-bold mb-2 text-sm" style={{ color: 'whitesmoke' }}>GitHub / Portfolio URL</label>
+                                    <input type="url" id="github" value={github} onChange={(e) => setGithub(e.target.value)} placeholder="https://github.com/..." className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-purple-500 bg-opacity-50" />
                                 </div>
                             </div>
 
                             {/* --- EXPERIENCE TOGGLE --- */}
-                            <div className="bg-purple-50 p-6 rounded-xl border border-purple-100">
-                                <h3 className="text-lg font-bold text-purple-900 mb-4 border-b border-purple-200 pb-2">Professional Experience</h3>
+                            <div className="grid grid-cols-1 gap-4">
+                                <h3 className="col-span-full text-lg font-bold mb-4 border-b border-purple-200 pb-2" style={{ color: 'whitesmoke' }}>Professional Experience</h3>
                                 <div className="flex gap-4 mb-4">
                                     <button
                                         type="button"
@@ -348,12 +366,12 @@ const Builder = () => {
 
                                 {hasExperience === true && (
                                     <div className="form-div flex flex-col mt-4 animate-in fade-in slide-in-from-top-2">
-                                        <label htmlFor="experience" className="text-gray-700 font-semibold mb-2 text-sm">Work Experience Details</label>
+                                        <label htmlFor="experience" className="font-bold mb-2 text-sm" style={{ color: 'whitesmoke' }}>Work Experience Details</label>
                                         <textarea
                                             id="experience" value={experience} onChange={(e) => setExperience(e.target.value)}
                                             rows={5}
                                             placeholder="Company Name, Job Title, Dates&#10;• Bullet point 1&#10;• Bullet point 2"
-                                            className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-white resize-none"
+                                            className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-purple-500 bg-opacity-50 resize-none"
                                             required={hasExperience}
                                         />
                                     </div>
@@ -361,49 +379,47 @@ const Builder = () => {
                             </div>
 
                             {/* --- SKILLS --- */}
-                            <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
-                                <h3 className="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Skills</h3>
-                                <div className="grid grid-cols-1 gap-4">
-                                    <div className="form-div flex flex-col">
-                                        <label htmlFor="skills" className="text-gray-700 font-semibold mb-2 text-sm">Hard Skills (Comma-separated)</label>
-                                        <input type="text" id="skills" value={skills} onChange={(e) => setSkills(e.target.value)} placeholder="React, Python, Data Analysis..." className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-white" required />
-                                    </div>
-                                    <div className="form-div flex flex-col">
-                                        <label htmlFor="softSkills" className="text-gray-700 font-semibold mb-2 text-sm">Soft Skills (Comma-separated)</label>
-                                        <input type="text" id="softSkills" value={softSkills} onChange={(e) => setSoftSkills(e.target.value)} placeholder="Leadership, Communication, Problem Solving..." className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-white" />
-                                    </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <h3 className="col-span-full text-lg font-bold mb-4 border-b pb-2" style={{ color: 'whitesmoke' }}>Skills</h3>
+                                <div className="form-div flex flex-col">
+                                    <label htmlFor="skills" className="font-bold mb-2 text-sm" style={{ color: 'whitesmoke' }}>Hard Skills (Comma-separated)</label>
+                                    <input type="text" id="skills" value={skills} onChange={(e) => setSkills(e.target.value)} placeholder="React, Python, Data Analysis..." className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-purple-500 bg-opacity-50" required />
+                                </div>
+                                <div className="form-div flex flex-col">
+                                    <label htmlFor="softSkills" className="font-bold mb-2 text-sm" style={{ color: 'whitesmoke' }}>Soft Skills (Comma-separated)</label>
+                                    <input type="text" id="softSkills" value={softSkills} onChange={(e) => setSoftSkills(e.target.value)} placeholder="Leadership, Communication, Problem Solving..." className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-purple-500 bg-opacity-50" />
                                 </div>
                             </div>
 
                             {/* --- OTHER DETAILS --- */}
-                            <div className="bg-gray-50 p-6 rounded-xl border border-gray-100 space-y-6">
-                                <h3 className="text-lg font-bold text-gray-800 border-b pb-2">Additional Details</h3>
+                            <div className="grid grid-cols-1 gap-4">
+                                <h3 className="col-span-full text-lg font-bold border-b pb-2" style={{ color: 'whitesmoke' }}>Additional Details</h3>
 
                                 <div className="form-div flex flex-col">
-                                    <label htmlFor="project" className="text-gray-700 font-semibold mb-2 text-sm">Projects</label>
-                                    <textarea id="project" value={project} onChange={(e) => setProject(e.target.value)} rows={3} placeholder="Project Name: Description of what you built and technologies used." className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-white resize-none" />
+                                    <label htmlFor="project" className="font-bold mb-2 text-sm" style={{ color: 'whitesmoke' }}>Projects</label>
+                                    <textarea id="project" value={project} onChange={(e) => setProject(e.target.value)} rows={3} placeholder="Project Name: Description of what you built and technologies used." className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-purple-500 bg-opacity-50 resize-none" />
                                 </div>
 
                                 <div className="form-div flex flex-col">
-                                    <label htmlFor="education" className="text-gray-700 font-semibold mb-2 text-sm">Education</label>
-                                    <textarea id="education" value={education} onChange={(e) => setEducation(e.target.value)} rows={2} placeholder="BS Computer Science, University Name, 2020-2024" className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-white resize-none" required />
+                                    <label htmlFor="education" className="font-bold mb-2 text-sm" style={{ color: 'whitesmoke' }}>Education</label>
+                                    <textarea id="education" value={education} onChange={(e) => setEducation(e.target.value)} rows={2} placeholder="BS Computer Science, University Name, 2020-2024" className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-purple-500 bg-opacity-50 resize-none" required />
                                 </div>
 
                                 <div className="form-div flex flex-col">
-                                    <label htmlFor="certification" className="text-gray-700 font-semibold mb-2 text-sm">Certifications</label>
-                                    <textarea id="certification" value={certification} onChange={(e) => setCertification(e.target.value)} rows={2} placeholder="AWS Certified Cloud Practitioner, 2023" className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-white resize-none" />
+                                    <label htmlFor="certification" className="font-bold mb-2 text-sm" style={{ color: 'whitesmoke' }}>Certifications</label>
+                                    <textarea id="certification" value={certification} onChange={(e) => setCertification(e.target.value)} rows={2} placeholder="AWS Certified Cloud Practitioner, 2023" className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-purple-500 bg-opacity-50 resize-none" />
                                 </div>
 
                                 <div className="form-div flex flex-col">
-                                    <label htmlFor="description" className="text-gray-700 font-semibold mb-2 text-sm">Professional Summary</label>
-                                    <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="A brief summary of your background and career goals." className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-white resize-none" required />
+                                    <label htmlFor="description" className="font-bold mb-2 text-sm" style={{ color: 'whitesmoke' }}>Professional Summary</label>
+                                    <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} placeholder="A brief summary of your background and career goals." className="w-full px-4 py-3 rounded-xl border border-purple-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all bg-purple-500 bg-opacity-50 resize-none" required />
                                 </div>
                             </div>
 
                             <button
                                 type="submit"
                                 disabled={isProcessing}
-                                className={`bg-linear-to-r from-[#7b7fdb] to-[#9b8fe8] hover:brightness-110 active:brightness-95 text-white font-bold py-4 px-8 rounded-full transition-all duration-200 shadow-md mt-6 w-full max-w-sm mx-auto text-lg ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                                className={`bg-linear-to-r from-[purple-500] to-[purple-600] hover:brightness-110 active:brightness-95 text-white font-bold py-4 px-8 rounded-full transition-all duration-200 shadow-md mt-6 w-full max-w-sm mx-auto text-lg ${isProcessing ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                             >
                                 {isProcessing ? 'Updating...' : (resumeId ? 'Update Resume' : 'Generate Resume')}
                             </button>

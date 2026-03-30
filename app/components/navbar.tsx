@@ -1,5 +1,10 @@
 import { Link, useNavigate, useLocation } from "react-router";
 import { usePuterStore } from "~/lib/puter";
+import styles from "../styles/navbar.css?url";
+
+export const links = () => [
+    { rel: "stylesheet", href: styles }
+];
 
 export interface NavbarProps {
     isDemo?: boolean;
@@ -19,52 +24,56 @@ const Navbar = ({ isDemo = false }: NavbarProps) => {
     };
 
     return (
-        <nav className="navbar flex justify-between items-center p-4 relative z-50 bg-white backdrop-blur-md">
-            <Link to={isDemo ? "/?demo=true" : "/"}>
-                <p className="text-xl font-bold text-gradient">
-                    Neural-AI
-                </p>
-            </Link>
+        <nav className="navbar flex justify-between items-center p-4 relative z-50 bg-transparent">
+            <div />
             
             <div className="flex items-center gap-4">
                 {/* Conditionally render the Resume Builder button */}
                 {!isBuilderPage && (
-                    <Link to={isDemo ? "/?demo=true" : "/builder"} onClick={(e) => {
-                        if (isDemo) {
-                            e.preventDefault();
-                            alert("Please log in to use the Resume Builder.");
-                        }
-                    }} className="primary-button w-fit">
-                        Resume Builder
-                    </Link>
+                    <div className="btn-wrap">
+                        <Link to={isDemo ? "/?demo=true" : "/builder"} onClick={(e) => {
+                            if (isDemo) {
+                                e.preventDefault();
+                                alert("Please log in to use the Resume Builder.");
+                            }
+                        }} className="btn">
+                            Resume Builder
+                        </Link>
+                    </div>
                 )}
 
                 {/* Only show the Upload Resume button if we are NOT already on the upload page */}
                 {!isUploadPage && (
-                    <Link to={isDemo ? "/?demo=true" : "/upload"} onClick={(e) => {
-                        if (isDemo) {
-                            e.preventDefault();
-                            alert("Please log in to upload a resume.");
-                        }
-                    }} className="primary-button w-fit">
-                        Upload Resume
-                    </Link>
+                    <div className="btn-wrap">
+                        <Link to={isDemo ? "/?demo=true" : "/upload"} onClick={(e) => {
+                            if (isDemo) {
+                                e.preventDefault();
+                                alert("Please log in to upload a resume.");
+                            }
+                        }} className="btn">
+                            Upload Resume
+                        </Link>
+                    </div>
                 )}
                 
                 {auth.isAuthenticated ? (
-                    <button 
-                        onClick={handleSignOut}
-                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md transition-colors text-sm font-medium"
-                    >
-                        Log Out
-                    </button>
+                    <div className="btn-wrap">
+                        <button 
+                            onClick={handleSignOut}
+                            className="btn btn-danger"
+                        >
+                            Log Out
+                        </button>
+                    </div>
                 ) : isDemo ? (
-                    <button 
-                        onClick={() => navigate('/auth')}
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors text-sm font-medium"
-                    >
-                        Log In
-                    </button>
+                    <div className="btn-wrap">
+                        <button 
+                            onClick={() => navigate('/auth')}
+                            className="btn"
+                        >
+                            Log In
+                        </button>
+                    </div>
                 ) : null}
             </div>
         </nav>
